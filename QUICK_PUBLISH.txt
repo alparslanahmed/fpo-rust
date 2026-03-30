@@ -1,0 +1,54 @@
+# Quick Publication Reference
+
+## One-Time Setup
+
+```bash
+# 1. Create crates.io account
+# Visit: https://crates.io/me
+
+# 2. Generate API token
+# Account settings → API Tokens → Create new token
+
+# 3. Login to cargo
+cargo login
+# Paste your API token when prompted
+```
+
+## Publishing
+
+```bash
+# Test publish (dry run)
+cargo publish --dry-run --allow-dirty
+
+# Actual publish
+cargo publish --allow-dirty
+
+# Check status on crates.io
+# https://crates.io/crates/fpo-rust
+```
+
+## After Publishing
+
+### For Users
+```toml
+# In Cargo.toml
+[dependencies]
+fpo-rust = "0.1"
+```
+
+### Documentation URLs
+- Crate page: https://crates.io/crates/fpo-rust
+- API docs: https://docs.rs/fpo-rust
+- Source: https://github.com/ankandrew/fpo-rust
+
+## Version Updates
+
+For future versions:
+
+1. Update `Cargo.toml` version
+2. Update `CHANGELOG.md` with changes
+3. Commit and push to git
+4. Run `cargo publish --allow-dirty`
+
+That's it! 🎉
+
