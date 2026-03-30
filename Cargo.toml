@@ -1,9 +1,16 @@
 [package]
 name = "fpo-rust"
 version = "0.1.0"
-edition = "2024"
-description = "Rust inference port of fast-plate-ocr"
+edition = "2021"
+description = "Fast license plate OCR inference in pure Rust - a port of fast-plate-ocr with ONNX model support"
 license = "MIT"
+repository = "https://github.com/ankandrew/fpo-rust"
+homepage = "https://github.com/ankandrew/fpo-rust"
+documentation = "https://docs.rs/fpo-rust"
+readme = "README.md"
+keywords = ["ocr", "license-plate", "onnx", "inference"]
+categories = ["computer-vision", "machine-learning"]
+authors = ["fpo-rust contributors"]
 
 [[bin]]
 name = "fpo-rust"

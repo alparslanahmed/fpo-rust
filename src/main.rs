@@ -37,9 +37,8 @@ OPTIONS (run):
     --model <NAME>       Hub model name (e.g. cct-s-v2-global-model)
     --onnx  <PATH>       Path to a custom ONNX model file
     --config <PATH>      Path to the matching plate config YAML
-    --confidence         Print per-character confidence scores
     --keep-pad           Keep trailing padding characters in output
-    IMAGES...            One or more image paths to process
+    IMAGES...            One or more image paths to process (confidence scores always shown)
 
 OPTIONS (benchmark):
     --model <NAME>       Hub model name
@@ -88,7 +87,6 @@ fn cmd_run(args: &[String]) -> anyhow::Result<()> {
     let mut model: Option<String> = None;
     let mut onnx: Option<PathBuf> = None;
     let mut cfg: Option<PathBuf> = None;
-    let mut confidence = false;
     let mut keep_pad = false;
     let mut images: Vec<String> = vec![];
 
@@ -114,7 +112,6 @@ fn cmd_run(args: &[String]) -> anyhow::Result<()> {
                         .into(),
                 );
             }
-            "--confidence" => confidence = true,
             "--keep-pad" => keep_pad = true,
             other => images.push(other.to_owned()),
         }
@@ -131,7 +128,8 @@ fn cmd_run(args: &[String]) -> anyhow::Result<()> {
         .map(|s| PlateInput::from(s.as_str()))
         .collect();
 
-    let predictions = rec.run(&inputs, confidence, !keep_pad)?;
+    // Always request confidence scores
+    let predictions = rec.run(&inputs, true, !keep_pad)?;
 
     for (path, pred) in images.iter().zip(predictions.iter()) {
         print!("{path}: {}", pred.plate);
@@ -141,16 +139,11 @@ fn cmd_run(args: &[String]) -> anyhow::Result<()> {
                 print!(" ({:.1}%)", rp * 100.0);
             }
         }
-        println!();
         if let Some(probs) = &pred.char_probs {
-            let chars: Vec<String> = pred
-                .plate
-                .chars()
-                .zip(probs.iter())
-                .map(|(c, p)| format!("{c}:{:.2}", p))
-                .collect();
-            println!("  confidences: [{}]", chars.join(", "));
+            let avg_conf: f32 = probs.iter().sum::<f32>() / probs.len() as f32;
+            print!(" - Char Confidence: {:.2}", avg_conf);
         }
+        println!();
     }
 
     Ok(())
