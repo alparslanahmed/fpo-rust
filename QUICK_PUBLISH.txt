@@ -39,7 +39,7 @@ fpo-rust = "0.1"
 ### Documentation URLs
 - Crate page: https://crates.io/crates/fpo-rust
 - API docs: https://docs.rs/fpo-rust
-- Source: https://github.com/ankandrew/fpo-rust
+- Source: https://github.com/alparslanahmed/fpo-rust
 
 ## Version Updates
 

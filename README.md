@@ -31,7 +31,7 @@ Or use the git repository:
 
 ```toml
 [dependencies]
-fpo-rust = { git = "https://github.com/ankandrew/fpo-rust" }
+fpo-rust = { git = "https://github.com/alparslanahmed/fpo-rust" }
 ```
 
 Check the [crates.io page](https://crates.io/crates/fpo-rust) for the latest version.
@@ -41,7 +41,7 @@ Check the [crates.io page](https://crates.io/crates/fpo-rust) for the latest ver
 Clone the repository and build:
 
 ```bash
-git clone https://github.com/ankandrew/fpo-rust
+git clone https://github.com/alparslanahmed/fpo-rust
 cd fpo-rust
 cargo build --release
 ```

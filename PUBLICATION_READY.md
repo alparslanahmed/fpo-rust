@@ -82,7 +82,7 @@ Check `https://crates.io/crates/fpo-rust/`
 
 - API docs available at: `https://docs.rs/fpo-rust/`
 - Crate page: `https://crates.io/crates/fpo-rust/`
-- Homepage: `https://github.com/ankandrew/fpo-rust`
+- Homepage: `https://github.com/alparslanahmed/fpo-rust`
 
 ## 🔖 Version Information
 
@@ -126,7 +126,7 @@ Check `https://crates.io/crates/fpo-rust/`
 
 - **Crates.io**: https://crates.io/crates/fpo-rust
 - **Docs.rs**: https://docs.rs/fpo-rust
-- **GitHub**: https://github.com/ankandrew/fpo-rust
+- **GitHub**: https://github.com/alparslanahmed/fpo-rust
 - **Original fast-plate-ocr**: https://github.com/ankandrew/fast-plate-ocr
 
 ---
