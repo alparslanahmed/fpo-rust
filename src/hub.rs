@@ -155,6 +155,30 @@ impl OcrModel {
         }
     }
 
+    /// Return the ONNX filename distributed by the upstream model hub.
+    pub fn model_filename(&self) -> &'static str {
+        self.urls()
+            .0
+            .rsplit('/')
+            .next()
+            .expect("model URL must have a path segment")
+    }
+
+    /// Return the ONNX filename stem used for matching converted NCNN files.
+    pub fn model_stem(&self) -> &'static str {
+        let filename = self.model_filename();
+        filename.strip_suffix(".onnx").unwrap_or(filename)
+    }
+
+    /// Return the YAML config filename distributed by the upstream model hub.
+    pub fn config_filename(&self) -> &'static str {
+        self.urls()
+            .1
+            .rsplit('/')
+            .next()
+            .expect("config URL must have a path segment")
+    }
+
     /// Parse a model from its string identifier.
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
@@ -171,6 +195,45 @@ impl OcrModel {
             _ => None,
         }
     }
+}
+
+/// Find repository-bundled NCNN files for a hub model.
+///
+/// The search supports common development and deployment layouts:
+/// `./models` from the current working directory, `models` next to the executable,
+/// and the repository `models` directory known at compile time.
+pub fn bundled_ncnn_model(model: &OcrModel) -> Option<(PathBuf, PathBuf, PathBuf)> {
+    let stem = model.model_stem();
+    let config_filename = model.config_filename();
+
+    for dir in bundled_model_dirs() {
+        let param_path = dir.join(format!("{stem}.ncnn.param"));
+        let bin_path = dir.join(format!("{stem}.ncnn.bin"));
+        let config_path = dir.join(config_filename);
+
+        if param_path.is_file() && bin_path.is_file() && config_path.is_file() {
+            return Some((param_path, bin_path, config_path));
+        }
+    }
+
+    None
+}
+
+fn bundled_model_dirs() -> Vec<PathBuf> {
+    let mut dirs = Vec::new();
+
+    if let Ok(current_dir) = std::env::current_dir() {
+        dirs.push(current_dir.join("models"));
+    }
+
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(exe_dir) = exe_path.parent() {
+            dirs.push(exe_dir.join("models"));
+        }
+    }
+
+    dirs.push(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("models"));
+    dirs
 }
 
 /// Default cache directory: `~/.cache/fast-plate-ocr/`.
@@ -200,19 +263,17 @@ fn download_file(url: &str, dest: &Path) -> anyhow::Result<()> {
 
     let pb = ProgressBar::new(content_length);
     pb.set_style(
-        ProgressStyle::with_template(
-            "{msg} [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})",
-        )
-        .unwrap()
-        .progress_chars("##-"),
+        ProgressStyle::with_template("{msg} [{bar:40.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+            .unwrap()
+            .progress_chars("##-"),
     );
     pb.set_message(format!("Downloading {file_name}"));
 
     // Write to a temporary sibling file then rename (atomic-ish).
     let tmp = dest.with_extension("tmp");
     {
-        let mut file =
-            std::fs::File::create(&tmp).with_context(|| format!("Cannot create {}", tmp.display()))?;
+        let mut file = std::fs::File::create(&tmp)
+            .with_context(|| format!("Cannot create {}", tmp.display()))?;
 
         let mut buf = [0u8; 65_536];
         let body = response.body_mut();
@@ -251,7 +312,10 @@ pub fn download_model(
     };
 
     if cache_dir.is_file() {
-        bail!("Expected a directory but found a file: {}", cache_dir.display());
+        bail!(
+            "Expected a directory but found a file: {}",
+            cache_dir.display()
+        );
     }
 
     std::fs::create_dir_all(&cache_dir)

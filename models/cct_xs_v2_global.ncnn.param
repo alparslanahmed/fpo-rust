@@ -1,0 +1,414 @@
+7767517
+412 451
+Input                    in0                      0 1 in0
+Tensor.to                Tensor.to_0              1 1 in0 1
+BinaryOp                 mul_0                    1 1 1 2 0=2 1=1 2=3.92156886e-3
+Permute                  permute_106              1 1 2 3 0=4
+Convolution              conv_48                  1 1 3 4 0=32 1=3 11=3 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=864
+Swish                    silu_68                  1 1 4 5
+Padding                  pad_57                   1 1 5 6 0=0 1=1 2=0 3=1 4=0 5=-3.40282347e38 6=0
+Pooling                  maxpool2d_55             1 1 6 7 0=0 1=2 11=2 12=1 13=0 2=1 3=0 5=0
+ConvolutionDepthWise     padconvdw_0              1 1 7 8 0=32 1=3 11=3 12=1 13=2 14=0 15=1 16=1 2=1 3=2 4=0 5=0 6=288 7=32
+Convolution              conv_49                  1 1 8 9 0=48 1=3 11=3 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=13824
+Swish                    silu_69                  1 1 9 10
+Convolution              conv_50                  1 1 10 11 0=64 1=3 11=3 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=27648
+Swish                    silu_70                  1 1 11 12
+Padding                  pad_59                   1 1 12 13 0=0 1=1 2=0 3=1 4=0 5=-3.40282347e38 6=0
+Pooling                  maxpool2d_56             1 1 13 14 0=0 1=2 11=2 12=1 13=0 2=1 3=0 5=0
+ConvolutionDepthWise     convdw_222               1 1 14 15 0=64 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=0 6=576 7=64
+Convolution              conv_51                  1 1 15 16 0=80 1=3 11=3 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=46080
+Swish                    silu_71                  1 1 16 17
+Convolution              conv_52                  1 1 17 18 0=96 1=3 11=3 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=69120
+Swish                    silu_72                  1 1 18 19
+Convolution              conv_53                  1 1 19 20 0=384 1=2 11=2 12=1 13=2 14=0 2=1 3=2 4=0 5=0 6=147456
+Permute                  permute_107              1 1 20 21 0=3
+Reshape                  reshape_147              1 1 21 22 0=384 1=65
+Gemm                     gemm_0                   1 1 22 23 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=384
+Split                    splitncnn_0              1 2 23 24 25
+Sigmoid                  sigmoid_60               1 1 25 26
+MemoryData               CCT_OCR_1/pos_emb_1/BroadcastTo:0 0 1 27 0=96 1=65
+BinaryOp                 mul_1                    2 1 24 26 28 0=2
+BinaryOp                 add_2                    2 1 28 27 29 0=0
+Split                    splitncnn_1              1 2 29 30 31
+BinaryOp                 mul_3                    1 1 30 32 0=2 1=1 2=0.938134253
+TanH                     tanh_91                  1 1 32 33
+MemoryData               CCT_OCR_1/transformer_block_1_1/dy_t_1/mul_1/ReadVariableOp:0 0 1 34 0=96
+MemoryData               CCT_OCR_1/transformer_block_1_1/dy_t_1/add/ReadVariableOp:0 0 1 35 0=96
+BinaryOp                 mul_4                    2 1 33 34 36 0=2
+BinaryOp                 add_5                    2 1 36 35 37 0=0
+Split                    splitncnn_2              1 3 37 38 39 40
+Gemm                     gemm_1                   1 1 40 41 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_2                   1 1 39 42 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_3                   1 1 38 43 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Reshape                  reshape_148              1 1 41 44 0=48 1=2 2=65
+Reshape                  reshape_149              1 1 42 45 0=48 1=2 2=65
+Reshape                  reshape_150              1 1 43 46 0=48 1=2 2=65
+MemoryData               CCT_OCR_1/transformer_block_1_1/multi_head_attention_1/value_1/Add/ReadVariableOp:0 0 1 47 0=48 1=2
+Reshape                  reshape_151              1 1 47 48 0=48 1=2 2=1
+BinaryOp                 add_6                    2 1 44 48 49 0=0
+MemoryData               CCT_OCR_1/transformer_block_1_1/multi_head_attention_1/query_1/Add/ReadVariableOp:0 0 1 50 0=48 1=2
+MemoryData               CCT_OCR_1/transformer_block_1_1/multi_head_attention_1/key_1/Add/ReadVariableOp:0 0 1 51 0=48 1=2
+Reshape                  reshape_152              1 1 51 52 0=48 1=2 2=1
+BinaryOp                 add_7                    2 1 46 52 53 0=0
+Permute                  permute_108              1 1 49 54 0=2
+Reshape                  reshape_153              1 1 50 55 0=48 1=2 2=1
+BinaryOp                 add_8                    2 1 45 55 56 0=0
+BinaryOp                 mul_9                    1 1 56 57 0=2 1=1 2=0.144337565
+Permute                  permute_109              1 1 53 58 0=2
+Permute                  permute_110              1 1 57 59 0=3
+MatMul                   matmul_203               2 1 58 59 60
+Softmax                  softmax_80               1 1 60 61 0=1 1=1
+Permute                  permute_111              1 1 61 62 0=1
+MatMul                   matmul_204               2 1 62 54 63
+Permute                  permute_112              1 1 63 64 0=2
+Reshape                  reshape_154              1 1 64 65 0=96 1=65
+Gemm                     gemm_4                   1 1 65 66 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+BinaryOp                 add_10                   2 1 31 66 67 0=0
+Split                    splitncnn_3              1 2 67 68 69
+BinaryOp                 mul_11                   1 1 68 70 0=2 1=1 2=2.04148483
+TanH                     tanh_92                  1 1 70 71
+MemoryData               CCT_OCR_1/transformer_block_1_1/dy_t_1_2/mul_1/ReadVariableOp:0 0 1 72 0=96
+MemoryData               CCT_OCR_1/transformer_block_1_1/dy_t_1_2/add/ReadVariableOp:0 0 1 73 0=96
+BinaryOp                 mul_12                   2 1 71 72 74 0=2
+BinaryOp                 add_13                   2 1 74 73 75 0=0
+Gemm                     gemm_5                   1 1 75 76 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Swish                    silu_73                  1 1 76 77
+Gemm                     gemm_6                   1 1 77 78 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Split                    splitncnn_4              1 2 78 79 80
+Sigmoid                  sigmoid_61               1 1 80 81
+BinaryOp                 mul_14                   2 1 79 81 82 0=2
+BinaryOp                 add_15                   2 1 69 82 83 0=0
+Split                    splitncnn_5              1 2 83 84 85
+BinaryOp                 mul_16                   1 1 84 86 0=2 1=1 2=0.955368578
+TanH                     tanh_93                  1 1 86 87
+MemoryData               CCT_OCR_1/transformer_block_2_1/dy_t_2_1/mul_1/ReadVariableOp:0 0 1 88 0=96
+MemoryData               CCT_OCR_1/transformer_block_2_1/dy_t_2_1/add/ReadVariableOp:0 0 1 89 0=96
+BinaryOp                 mul_17                   2 1 87 88 90 0=2
+BinaryOp                 add_18                   2 1 90 89 91 0=0
+Split                    splitncnn_6              1 3 91 92 93 94
+Gemm                     gemm_7                   1 1 94 95 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_8                   1 1 93 96 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_9                   1 1 92 97 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Reshape                  reshape_155              1 1 95 98 0=48 1=2 2=65
+Reshape                  reshape_156              1 1 96 99 0=48 1=2 2=65
+Reshape                  reshape_157              1 1 97 100 0=48 1=2 2=65
+MemoryData               CCT_OCR_1/transformer_block_2_1/multi_head_attention_1_1/value_1/Add/ReadVariableOp:0 0 1 101 0=48 1=2
+Reshape                  reshape_158              1 1 101 102 0=48 1=2 2=1
+BinaryOp                 add_19                   2 1 98 102 103 0=0
+MemoryData               CCT_OCR_1/transformer_block_2_1/multi_head_attention_1_1/query_1/Add/ReadVariableOp:0 0 1 104 0=48 1=2
+MemoryData               CCT_OCR_1/transformer_block_2_1/multi_head_attention_1_1/key_1/Add/ReadVariableOp:0 0 1 105 0=48 1=2
+Reshape                  reshape_159              1 1 105 106 0=48 1=2 2=1
+BinaryOp                 add_20                   2 1 100 106 107 0=0
+Permute                  permute_113              1 1 103 108 0=2
+Reshape                  reshape_160              1 1 104 109 0=48 1=2 2=1
+BinaryOp                 add_21                   2 1 99 109 110 0=0
+BinaryOp                 mul_22                   1 1 110 111 0=2 1=1 2=0.144337565
+Permute                  permute_114              1 1 107 112 0=2
+Permute                  permute_115              1 1 111 113 0=3
+MatMul                   matmul_205               2 1 112 113 114
+Softmax                  softmax_81               1 1 114 115 0=1 1=1
+Permute                  permute_116              1 1 115 116 0=1
+MatMul                   matmul_206               2 1 116 108 117
+Permute                  permute_117              1 1 117 118 0=2
+Reshape                  reshape_161              1 1 118 119 0=96 1=65
+Gemm                     gemm_10                  1 1 119 120 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+BinaryOp                 add_23                   2 1 85 120 121 0=0
+Split                    splitncnn_7              1 2 121 122 123
+BinaryOp                 mul_24                   1 1 122 124 0=2 1=1 2=0.998497188
+TanH                     tanh_94                  1 1 124 125
+MemoryData               CCT_OCR_1/transformer_block_2_1/dy_t_3_1/mul_1/ReadVariableOp:0 0 1 126 0=96
+MemoryData               CCT_OCR_1/transformer_block_2_1/dy_t_3_1/add/ReadVariableOp:0 0 1 127 0=96
+BinaryOp                 mul_25                   2 1 125 126 128 0=2
+BinaryOp                 add_26                   2 1 128 127 129 0=0
+Gemm                     gemm_11                  1 1 129 130 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Swish                    silu_74                  1 1 130 131
+Gemm                     gemm_12                  1 1 131 132 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Split                    splitncnn_8              1 2 132 133 134
+Sigmoid                  sigmoid_62               1 1 134 135
+BinaryOp                 mul_27                   2 1 133 135 136 0=2
+BinaryOp                 add_28                   2 1 123 136 137 0=0
+Split                    splitncnn_9              1 2 137 138 139
+BinaryOp                 mul_29                   1 1 138 140 0=2 1=1 2=0.286777765
+TanH                     tanh_95                  1 1 140 141
+MemoryData               CCT_OCR_1/transformer_block_3_1/dy_t_4_1/mul_1/ReadVariableOp:0 0 1 142 0=96
+MemoryData               CCT_OCR_1/transformer_block_3_1/dy_t_4_1/add/ReadVariableOp:0 0 1 143 0=96
+BinaryOp                 mul_30                   2 1 141 142 144 0=2
+BinaryOp                 add_31                   2 1 144 143 145 0=0
+Split                    splitncnn_10             1 3 145 146 147 148
+Gemm                     gemm_13                  1 1 148 149 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_14                  1 1 147 150 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_15                  1 1 146 151 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Reshape                  reshape_162              1 1 149 152 0=48 1=2 2=65
+Reshape                  reshape_163              1 1 150 153 0=48 1=2 2=65
+Reshape                  reshape_164              1 1 151 154 0=48 1=2 2=65
+MemoryData               CCT_OCR_1/transformer_block_3_1/multi_head_attention_2_1/value_1/Add/ReadVariableOp:0 0 1 155 0=48 1=2
+Reshape                  reshape_165              1 1 155 156 0=48 1=2 2=1
+BinaryOp                 add_32                   2 1 152 156 157 0=0
+MemoryData               CCT_OCR_1/transformer_block_3_1/multi_head_attention_2_1/query_1/Add/ReadVariableOp:0 0 1 158 0=48 1=2
+MemoryData               CCT_OCR_1/transformer_block_3_1/multi_head_attention_2_1/key_1/Add/ReadVariableOp:0 0 1 159 0=48 1=2
+Reshape                  reshape_166              1 1 159 160 0=48 1=2 2=1
+BinaryOp                 add_33                   2 1 154 160 161 0=0
+Permute                  permute_118              1 1 157 162 0=2
+Reshape                  reshape_167              1 1 158 163 0=48 1=2 2=1
+BinaryOp                 add_34                   2 1 153 163 164 0=0
+BinaryOp                 mul_35                   1 1 164 165 0=2 1=1 2=0.144337565
+Permute                  permute_119              1 1 161 166 0=2
+Permute                  permute_120              1 1 165 167 0=3
+MatMul                   matmul_207               2 1 166 167 168
+Softmax                  softmax_82               1 1 168 169 0=1 1=1
+Permute                  permute_121              1 1 169 170 0=1
+MatMul                   matmul_208               2 1 170 162 171
+Permute                  permute_122              1 1 171 172 0=2
+Reshape                  reshape_168              1 1 172 173 0=96 1=65
+Gemm                     gemm_16                  1 1 173 174 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+BinaryOp                 add_36                   2 1 139 174 175 0=0
+Split                    splitncnn_11             1 2 175 176 177
+BinaryOp                 mul_37                   1 1 176 178 0=2 1=1 2=0.364861697
+TanH                     tanh_96                  1 1 178 179
+MemoryData               CCT_OCR_1/transformer_block_3_1/dy_t_5_1/mul_1/ReadVariableOp:0 0 1 180 0=96
+MemoryData               CCT_OCR_1/transformer_block_3_1/dy_t_5_1/add/ReadVariableOp:0 0 1 181 0=96
+BinaryOp                 mul_38                   2 1 179 180 182 0=2
+BinaryOp                 add_39                   2 1 182 181 183 0=0
+Gemm                     gemm_17                  1 1 183 184 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Swish                    silu_75                  1 1 184 185
+Gemm                     gemm_18                  1 1 185 186 10=4 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Split                    splitncnn_12             1 2 186 187 188
+Sigmoid                  sigmoid_63               1 1 188 189
+BinaryOp                 mul_40                   2 1 187 189 190 0=2
+BinaryOp                 add_41                   2 1 177 190 191 0=0
+Split                    splitncnn_13             1 2 191 192 193
+Gemm                     gemm_19                  1 1 193 194 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Gemm                     gemm_20                  1 1 192 195 10=-1 2=0 3=1 4=0 5=1 6=1 7=65 8=96 9=96
+Reshape                  reshape_169              1 1 194 196 0=48 1=2 2=65
+Reshape                  reshape_170              1 1 195 197 0=48 1=2 2=65
+MemoryData               CCT_OCR_1/token_reducer_1/multi_head_attention_3_1/value_1/Add/ReadVariableOp:0 0 1 198 0=48 1=2
+Reshape                  reshape_171              1 1 198 199 0=48 1=2 2=1
+BinaryOp                 add_42                   2 1 196 199 200 0=0
+MemoryData               CCT_OCR_1/token_reducer_1/multi_head_attention_3_1/key_1/Add/ReadVariableOp:0 0 1 201 0=48 1=2
+Reshape                  reshape_172              1 1 201 202 0=48 1=2 2=1
+BinaryOp                 add_43                   2 1 197 202 203 0=0
+Permute                  permute_123              1 1 200 204 0=2
+Permute                  permute_124              1 1 203 205 0=2
+MemoryData               CCT_OCR_1/token_reducer_1/multi_head_attention_3_1/transpose_1:0 0 1 206 0=10 1=48 2=2
+MatMul                   matmul_209               2 1 205 206 207
+Softmax                  softmax_83               1 1 207 208 0=1 1=1
+Permute                  permute_125              1 1 208 209 0=1
+MatMul                   matmul_210               2 1 209 204 210
+Permute                  permute_126              1 1 210 211 0=2
+Reshape                  reshape_173              1 1 211 212 0=96 1=10
+Gemm                     gemm_21                  1 1 212 213 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+MemoryData               CCT_OCR_1/token_reducer_1/Tile:0 0 1 214 0=96 1=10
+BinaryOp                 add_44                   2 1 213 214 215 0=0
+BinaryOp                 mul_45                   1 1 215 216 0=2 1=1 2=0.117280014
+TanH                     tanh_97                  1 1 216 217
+MemoryData               CCT_OCR_1/token_reducer_1/dy_t_6_1/mul_1/ReadVariableOp:0 0 1 218 0=96
+MemoryData               CCT_OCR_1/token_reducer_1/dy_t_6_1/add/ReadVariableOp:0 0 1 219 0=96
+BinaryOp                 mul_46                   2 1 217 218 220 0=2
+BinaryOp                 add_47                   2 1 220 219 221 0=0
+Split                    splitncnn_14             1 2 221 222 223
+BinaryOp                 mul_48                   1 1 222 224 0=2 1=1 2=1.62888026
+TanH                     tanh_98                  1 1 224 225
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/dy_t_7_1/mul_1/ReadVariableOp:0 0 1 226 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/dy_t_7_1/add/ReadVariableOp:0 0 1 227 0=96
+BinaryOp                 mul_49                   2 1 225 226 228 0=2
+BinaryOp                 add_50                   2 1 228 227 229 0=0
+Split                    splitncnn_15             1 3 229 230 231 232
+Gemm                     gemm_22                  1 1 232 233 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_23                  1 1 231 234 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_24                  1 1 230 235 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Reshape                  reshape_174              1 1 233 236 0=48 1=2 2=10
+Reshape                  reshape_175              1 1 234 237 0=48 1=2 2=10
+Reshape                  reshape_176              1 1 235 238 0=48 1=2 2=10
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/multi_head_attention_4_1/value_1/Add/ReadVariableOp:0 0 1 239 0=48 1=2
+Reshape                  reshape_177              1 1 239 240 0=48 1=2 2=1
+BinaryOp                 add_51                   2 1 236 240 241 0=0
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/multi_head_attention_4_1/query_1/Add/ReadVariableOp:0 0 1 242 0=48 1=2
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/multi_head_attention_4_1/key_1/Add/ReadVariableOp:0 0 1 243 0=48 1=2
+Reshape                  reshape_178              1 1 243 244 0=48 1=2 2=1
+BinaryOp                 add_52                   2 1 238 244 245 0=0
+Permute                  permute_127              1 1 241 246 0=2
+Reshape                  reshape_179              1 1 242 247 0=48 1=2 2=1
+BinaryOp                 add_53                   2 1 237 247 248 0=0
+BinaryOp                 mul_54                   1 1 248 249 0=2 1=1 2=0.144337565
+Permute                  permute_128              1 1 245 250 0=2
+Permute                  permute_129              1 1 249 251 0=3
+MatMul                   matmul_211               2 1 250 251 252
+Softmax                  softmax_84               1 1 252 253 0=1 1=1
+Permute                  permute_130              1 1 253 254 0=1
+MatMul                   matmul_212               2 1 254 246 255
+Permute                  permute_131              1 1 255 256 0=2
+Reshape                  reshape_180              1 1 256 257 0=96 1=10
+Gemm                     gemm_25                  1 1 257 258 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+BinaryOp                 add_55                   2 1 223 258 259 0=0
+Split                    splitncnn_16             1 2 259 260 261
+BinaryOp                 mul_56                   1 1 260 262 0=2 1=1 2=1.79683852
+TanH                     tanh_99                  1 1 262 263
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/dy_t_8_1/mul_1/ReadVariableOp:0 0 1 264 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_1_1/dy_t_8_1/add/ReadVariableOp:0 0 1 265 0=96
+BinaryOp                 mul_57                   2 1 263 264 266 0=2
+BinaryOp                 add_58                   2 1 266 265 267 0=0
+Gemm                     gemm_26                  1 1 267 268 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Swish                    silu_76                  1 1 268 269
+Gemm                     gemm_27                  1 1 269 270 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Split                    splitncnn_17             1 2 270 271 272
+Sigmoid                  sigmoid_64               1 1 272 273
+BinaryOp                 mul_59                   2 1 271 273 274 0=2
+BinaryOp                 add_60                   2 1 261 274 275 0=0
+Split                    splitncnn_18             1 2 275 276 277
+BinaryOp                 mul_61                   1 1 276 278 0=2 1=1 2=1.44574809
+TanH                     tanh_100                 1 1 278 279
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/dy_t_9_1/mul_1/ReadVariableOp:0 0 1 280 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/dy_t_9_1/add/ReadVariableOp:0 0 1 281 0=96
+BinaryOp                 mul_62                   2 1 279 280 282 0=2
+BinaryOp                 add_63                   2 1 282 281 283 0=0
+Split                    splitncnn_19             1 3 283 284 285 286
+Gemm                     gemm_28                  1 1 286 287 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_29                  1 1 285 288 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_30                  1 1 284 289 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Reshape                  reshape_181              1 1 287 290 0=48 1=2 2=10
+Reshape                  reshape_182              1 1 288 291 0=48 1=2 2=10
+Reshape                  reshape_183              1 1 289 292 0=48 1=2 2=10
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/multi_head_attention_5_1/value_1/Add/ReadVariableOp:0 0 1 293 0=48 1=2
+Reshape                  reshape_184              1 1 293 294 0=48 1=2 2=1
+BinaryOp                 add_64                   2 1 290 294 295 0=0
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/multi_head_attention_5_1/query_1/Add/ReadVariableOp:0 0 1 296 0=48 1=2
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/multi_head_attention_5_1/key_1/Add/ReadVariableOp:0 0 1 297 0=48 1=2
+Reshape                  reshape_185              1 1 297 298 0=48 1=2 2=1
+BinaryOp                 add_65                   2 1 292 298 299 0=0
+Permute                  permute_132              1 1 295 300 0=2
+Reshape                  reshape_186              1 1 296 301 0=48 1=2 2=1
+BinaryOp                 add_66                   2 1 291 301 302 0=0
+BinaryOp                 mul_67                   1 1 302 303 0=2 1=1 2=0.144337565
+Permute                  permute_133              1 1 299 304 0=2
+Permute                  permute_134              1 1 303 305 0=3
+MatMul                   matmul_213               2 1 304 305 306
+Softmax                  softmax_85               1 1 306 307 0=1 1=1
+Permute                  permute_135              1 1 307 308 0=1
+MatMul                   matmul_214               2 1 308 300 309
+Permute                  permute_136              1 1 309 310 0=2
+Reshape                  reshape_187              1 1 310 311 0=96 1=10
+Gemm                     gemm_31                  1 1 311 312 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+BinaryOp                 add_68                   2 1 277 312 313 0=0
+Split                    splitncnn_20             1 2 313 314 315
+BinaryOp                 mul_69                   1 1 314 316 0=2 1=1 2=1.14756477
+TanH                     tanh_101                 1 1 316 317
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/dy_t_10_1/mul_1/ReadVariableOp:0 0 1 318 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_2_1/dy_t_10_1/add/ReadVariableOp:0 0 1 319 0=96
+BinaryOp                 mul_70                   2 1 317 318 320 0=2
+BinaryOp                 add_71                   2 1 320 319 321 0=0
+Gemm                     gemm_32                  1 1 321 322 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Swish                    silu_77                  1 1 322 323
+Gemm                     gemm_33                  1 1 323 324 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Split                    splitncnn_21             1 2 324 325 326
+Sigmoid                  sigmoid_65               1 1 326 327
+BinaryOp                 mul_72                   2 1 325 327 328 0=2
+BinaryOp                 add_73                   2 1 315 328 329 0=0
+Split                    splitncnn_22             1 2 329 330 331
+BinaryOp                 mul_74                   1 1 330 332 0=2 1=1 2=1.02545869
+TanH                     tanh_102                 1 1 332 333
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/dy_t_11_1/mul_1/ReadVariableOp:0 0 1 334 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/dy_t_11_1/add/ReadVariableOp:0 0 1 335 0=96
+BinaryOp                 mul_75                   2 1 333 334 336 0=2
+BinaryOp                 add_76                   2 1 336 335 337 0=0
+Split                    splitncnn_23             1 3 337 338 339 340
+Gemm                     gemm_34                  1 1 340 341 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_35                  1 1 339 342 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_36                  1 1 338 343 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Reshape                  reshape_188              1 1 341 344 0=48 1=2 2=10
+Reshape                  reshape_189              1 1 342 345 0=48 1=2 2=10
+Reshape                  reshape_190              1 1 343 346 0=48 1=2 2=10
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/multi_head_attention_6_1/value_1/Add/ReadVariableOp:0 0 1 347 0=48 1=2
+Reshape                  reshape_191              1 1 347 348 0=48 1=2 2=1
+BinaryOp                 add_77                   2 1 344 348 349 0=0
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/multi_head_attention_6_1/query_1/Add/ReadVariableOp:0 0 1 350 0=48 1=2
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/multi_head_attention_6_1/key_1/Add/ReadVariableOp:0 0 1 351 0=48 1=2
+Reshape                  reshape_192              1 1 351 352 0=48 1=2 2=1
+BinaryOp                 add_78                   2 1 346 352 353 0=0
+Permute                  permute_137              1 1 349 354 0=2
+Reshape                  reshape_193              1 1 350 355 0=48 1=2 2=1
+BinaryOp                 add_79                   2 1 345 355 356 0=0
+BinaryOp                 mul_80                   1 1 356 357 0=2 1=1 2=0.144337565
+Permute                  permute_138              1 1 353 358 0=2
+Permute                  permute_139              1 1 357 359 0=3
+MatMul                   matmul_215               2 1 358 359 360
+Softmax                  softmax_86               1 1 360 361 0=1 1=1
+Permute                  permute_140              1 1 361 362 0=1
+MatMul                   matmul_216               2 1 362 354 363
+Permute                  permute_141              1 1 363 364 0=2
+Reshape                  reshape_194              1 1 364 365 0=96 1=10
+Gemm                     gemm_37                  1 1 365 366 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+BinaryOp                 add_81                   2 1 331 366 367 0=0
+Split                    splitncnn_24             1 2 367 368 369
+BinaryOp                 mul_82                   1 1 368 370 0=2 1=1 2=0.842807114
+TanH                     tanh_103                 1 1 370 371
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/dy_t_12_1/mul_1/ReadVariableOp:0 0 1 372 0=96
+MemoryData               CCT_OCR_1/post_reduce_transformer_block_3_1/dy_t_12_1/add/ReadVariableOp:0 0 1 373 0=96
+BinaryOp                 mul_83                   2 1 371 372 374 0=2
+BinaryOp                 add_84                   2 1 374 373 375 0=0
+Gemm                     gemm_38                  1 1 375 376 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Swish                    silu_78                  1 1 376 377
+Gemm                     gemm_39                  1 1 377 378 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Split                    splitncnn_25             1 2 378 379 380
+Sigmoid                  sigmoid_66               1 1 380 381
+BinaryOp                 mul_85                   2 1 379 381 382 0=2
+BinaryOp                 add_86                   2 1 369 382 383 0=0
+Split                    splitncnn_26             1 3 383 384 385 386
+BinaryOp                 mul_87                   1 1 384 387 0=2 1=1 2=0.802233398
+TanH                     tanh_104                 1 1 387 388
+Gemm                     gemm_40                  1 1 386 389 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=37 9=96
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/dy_t_13_1/mul_1/ReadVariableOp:0 0 1 390 0=96
+Softmax                  softmax_87               1 1 389 out0 0=1 1=1
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/dy_t_13_1/add/ReadVariableOp:0 0 1 392 0=96
+BinaryOp                 mul_88                   2 1 388 390 393 0=2
+BinaryOp                 add_89                   2 1 393 392 394 0=0
+Split                    splitncnn_27             1 3 394 395 396 397
+Gemm                     gemm_41                  1 1 397 398 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_42                  1 1 396 399 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Gemm                     gemm_43                  1 1 395 400 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Reshape                  reshape_195              1 1 398 401 0=48 1=2 2=10
+Reshape                  reshape_196              1 1 399 402 0=48 1=2 2=10
+Reshape                  reshape_197              1 1 400 403 0=48 1=2 2=10
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/multi_head_attention_7_1/value_1/Add/ReadVariableOp:0 0 1 404 0=48 1=2
+Reshape                  reshape_198              1 1 404 405 0=48 1=2 2=1
+BinaryOp                 add_90                   2 1 401 405 406 0=0
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/multi_head_attention_7_1/query_1/Add/ReadVariableOp:0 0 1 407 0=48 1=2
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/multi_head_attention_7_1/key_1/Add/ReadVariableOp:0 0 1 408 0=48 1=2
+Reshape                  reshape_199              1 1 408 409 0=48 1=2 2=1
+BinaryOp                 add_91                   2 1 403 409 410 0=0
+Permute                  permute_142              1 1 406 411 0=2
+Reshape                  reshape_200              1 1 407 412 0=48 1=2 2=1
+BinaryOp                 add_92                   2 1 402 412 413 0=0
+BinaryOp                 mul_93                   1 1 413 414 0=2 1=1 2=0.144337565
+Permute                  permute_143              1 1 410 415 0=2
+Permute                  permute_144              1 1 414 416 0=3
+MatMul                   matmul_217               2 1 415 416 417
+Softmax                  softmax_88               1 1 417 418 0=1 1=1
+Permute                  permute_145              1 1 418 419 0=1
+MatMul                   matmul_218               2 1 419 411 420
+Permute                  permute_146              1 1 420 421 0=2
+Reshape                  reshape_201              1 1 421 422 0=96 1=10
+Gemm                     gemm_44                  1 1 422 423 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+BinaryOp                 add_94                   2 1 385 423 424 0=0
+Split                    splitncnn_28             1 2 424 425 426
+BinaryOp                 mul_95                   1 1 425 427 0=2 1=1 2=0.718262613
+TanH                     tanh_105                 1 1 427 428
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/dy_t_14_1/mul_1/ReadVariableOp:0 0 1 429 0=96
+MemoryData               CCT_OCR_1/region_pre_pool_transformer_block_1_1/dy_t_14_1/add/ReadVariableOp:0 0 1 430 0=96
+BinaryOp                 mul_96                   2 1 428 429 431 0=2
+BinaryOp                 add_97                   2 1 431 430 432 0=0
+Gemm                     gemm_45                  1 1 432 433 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Swish                    silu_79                  1 1 433 434
+Gemm                     gemm_46                  1 1 434 435 10=4 2=0 3=1 4=0 5=1 6=1 7=10 8=96 9=96
+Split                    splitncnn_29             1 2 435 436 437
+Sigmoid                  sigmoid_67               1 1 437 438
+BinaryOp                 mul_98                   2 1 436 438 439 0=2
+BinaryOp                 add_99                   2 1 426 439 440 0=0
+Split                    splitncnn_30             1 2 440 441 442
+Gemm                     gemm_47                  1 1 441 443 10=-1 2=0 3=1 4=0 5=1 6=1 7=10 8=1 9=96
+BinaryOp                 add_100                  1 1 443 444 0=0 1=1 2=-1.10450694e-2
+Softmax                  softmax_89               1 1 444 445 0=0 1=1
+Reshape                  reshape_202              1 1 445 446 0=10 1=1
+MatMul                   matmul_219               2 1 446 442 447
+Squeeze                  squeeze_220              1 1 447 448 -23303=1,0
+InnerProduct             linear_54                1 1 448 449 0=66 1=1 2=6336
+Softmax                  softmax_90               1 1 449 out1 0=0 1=1

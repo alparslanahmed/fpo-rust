@@ -56,7 +56,7 @@ OPTIONS (convert-ncnn):
     --config <PATH>        Plate config used to set pnnx inputshape for custom ONNX
     --out-dir <PATH>       Output directory (default: ONNX directory or hub cache dir)
     --pnnx <PATH>          pnnx executable (default: pnnx)
-    --inputshape <SHAPE>   Override pnnx inputshape, e.g. [1,70,140,1]
+    --inputshape <SHAPE>   Override pnnx inputshape, e.g. [1,70,140,1]u8
     --fp16                 Let pnnx store fp16 weights (default: fp16=0 for portability)
     --force                Re-run conversion even if output files already exist
 
@@ -65,6 +65,8 @@ AVAILABLE HUB MODELS:
     cct-xs-v2-global-model
     cct-s-v1-global-model
     cct-xs-v1-global-model
+    cct-s-relu-v1-global-model
+    cct-xs-relu-v1-global-model
     argentinian-plates-cnn-model
     argentinian-plates-cnn-synth-model
     european-plates-mobile-vit-v2-model
@@ -524,7 +526,7 @@ fn cmd_convert_ncnn(args: &[String]) -> anyhow::Result<()> {
         None if cfg_path.is_file() => {
             let cfg = PlateConfig::from_yaml(&cfg_path)?;
             Some(format!(
-                "[1,{},{},{}]",
+                "[1,{},{},{}]u8",
                 cfg.img_height,
                 cfg.img_width,
                 cfg.num_channels()

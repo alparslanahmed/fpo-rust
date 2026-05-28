@@ -121,11 +121,7 @@ impl LicensePlateRecognizer {
         Ok(recognizer)
     }
 
-    /// Download a hub model config and load an already-converted NCNN model from the same cache
-    /// directory.
-    ///
-    /// The hub distributes ONNX files. Run `fpo-rust convert-ncnn --model <NAME>` first to create
-    /// the matching `.ncnn.param` and `.ncnn.bin` files.
+    /// Load bundled NCNN files for a hub model, or fall back to an already-converted cache entry.
     #[cfg(feature = "ncnn")]
     pub fn from_hub_ncnn(model: OcrModel, force_download: bool) -> anyhow::Result<Self> {
         Self::from_hub_ncnn_with_options(
@@ -143,6 +139,16 @@ impl LicensePlateRecognizer {
         options: crate::ncnn_backend::NcnnOptions,
     ) -> anyhow::Result<Self> {
         let model_name = model.as_str().to_owned();
+
+        if !force_download {
+            if let Some((param_path, bin_path, cfg_path)) = crate::hub::bundled_ncnn_model(&model) {
+                let mut recognizer =
+                    Self::from_ncnn_files_with_options(param_path, bin_path, cfg_path, options)?;
+                recognizer.model_name = format!("{model_name} (ncnn bundled)");
+                return Ok(recognizer);
+            }
+        }
+
         let (onnx_path, cfg_path) = download_model(&model, None, force_download)?;
         let (param_path, bin_path) = crate::ncnn_backend::ncnn_paths_for_onnx(&onnx_path)?;
 

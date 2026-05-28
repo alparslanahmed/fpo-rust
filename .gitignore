@@ -1,1 +1,5 @@
 /target
+/models/*.onnx
+/models/*.pnnx.*
+/models/*_pnnx.py
+/models/*_ncnn.py

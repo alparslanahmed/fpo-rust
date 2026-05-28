@@ -1,0 +1,771 @@
+7767517
+769 919
+Input                    in0                      0 1 in0
+Tensor.to                Tensor.to_51             1 1 in0 1
+BinaryOp                 mul_0                    1 1 1 2 0=2 1=1 2=3.92156886e-3
+Reshape                  reshape_192              1 1 2 3 0=140 1=70 2=1
+Convolution              conv_0                   1 1 3 4 0=16 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=1 6=144
+Swish                    silu_80                  1 1 4 5
+Convolution              conv_1                   1 1 5 6 0=32 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=512
+Swish                    silu_81                  1 1 6 7
+ConvolutionDepthWise     convdw_297               1 1 7 8 0=32 1=3 11=3 12=1 13=1 14=1 2=1 3=1 4=1 5=0 6=288 7=32
+MemoryData               functional_1/stages_0_0_conv_dw_bn_1/batchnorm/mul:0 0 1 9 0=1 1=1 2=32
+MemoryData               const_fold_opt__1451     0 1 10 0=1 1=1 2=32
+BinaryOp                 mul_1                    2 1 8 9 11 0=2
+BinaryOp                 add_2                    2 1 11 10 12 0=0
+Swish                    silu_82                  1 1 12 13
+Convolution              conv_2                   1 1 13 14 0=32 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=1024
+Convolution              conv_3                   1 1 14 15 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=2048
+Swish                    silu_83                  1 1 15 16
+ConvolutionDepthWise     convdw_298               1 1 16 17 0=64 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=0 6=576 7=64
+MemoryData               functional_1/stages_1_0_conv_dw_bn_1/batchnorm/mul:0 0 1 18 0=1 1=1 2=64
+MemoryData               const_fold_opt__1442     0 1 19 0=1 1=1 2=64
+BinaryOp                 mul_3                    2 1 17 18 20 0=2
+BinaryOp                 add_4                    2 1 20 19 21 0=0
+Swish                    silu_84                  1 1 21 22
+Convolution              conv_4                   1 1 22 23 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=4096
+Split                    splitncnn_0              1 2 23 24 25
+Convolution              conv_5                   1 1 25 26 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+Swish                    silu_85                  1 1 26 27
+ConvolutionDepthWise     convdw_299               1 1 27 28 0=128 1=3 11=3 12=1 13=1 14=1 2=1 3=1 4=1 5=0 6=1152 7=128
+MemoryData               functional_1/stages_1_1_conv_dw_bn_1/batchnorm/mul:0 0 1 29 0=1 1=1 2=128
+MemoryData               const_fold_opt__1412     0 1 30 0=1 1=1 2=128
+BinaryOp                 mul_5                    2 1 28 29 31 0=2
+BinaryOp                 add_6                    2 1 31 30 32 0=0
+Swish                    silu_86                  1 1 32 33
+Convolution              conv_6                   1 1 33 34 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+BinaryOp                 add_7                    2 1 34 24 35 0=0
+Convolution              conv_7                   1 1 35 36 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+Swish                    silu_87                  1 1 36 37
+ConvolutionDepthWise     convdw_300               1 1 37 38 0=128 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=0 6=1152 7=128
+MemoryData               functional_1/stages_2_0_conv_dw_bn_1/batchnorm/mul:0 0 1 39 0=1 1=1 2=128
+MemoryData               const_fold_opt__1421     0 1 40 0=1 1=1 2=128
+BinaryOp                 mul_8                    2 1 38 39 41 0=2
+BinaryOp                 add_9                    2 1 41 40 42 0=0
+Swish                    silu_88                  1 1 42 43
+Convolution              conv_8                   1 1 43 44 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=16384
+ConvolutionDepthWise     convdw_301               1 1 44 45 0=128 1=3 11=3 12=1 13=1 14=1 2=1 3=1 4=1 5=0 6=1152 7=128
+MemoryData               functional_1/stages_2_1_conv_kxk_bn_1/batchnorm/mul:0 0 1 46 0=1 1=1 2=128
+MemoryData               const_fold_opt__1470     0 1 47 0=1 1=1 2=128
+BinaryOp                 mul_10                   2 1 45 46 48 0=2
+BinaryOp                 add_11                   2 1 48 47 49 0=0
+Swish                    silu_89                  1 1 49 50
+Convolution              conv_9                   1 1 50 51 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=0 6=8192
+Interp                   interpolate_65           1 1 51 52 0=2 1=1.11111116 2=1.0 6=0
+Permute                  permute_123              1 1 52 53 0=3
+Reshape                  reshape_193              1 1 53 54
+Permute                  permute_124              1 1 54 55 0=0
+Reshape                  reshape_194              1 1 55 56 0=64 1=45 2=4
+Split                    splitncnn_1              1 2 56 57 58
+Reshape                  reshape_195              1 1 58 59 0=64 1=1 11=45 2=4
+Split                    splitncnn_2              1 3 59 60 61 62
+Reduction                mean_245                 1 1 62 63 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_3              1 2 63 64 65
+BinaryOp                 sub_12                   2 1 60 64 66 0=1
+Split                    splitncnn_4              1 2 66 67 68
+BinaryOp                 mul_13                   2 1 67 68 69 0=2
+Reduction                mean_246                 1 1 69 70 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_2_1_transformer_0_norm1_1/Reshape_1:0 0 1 71 0=64 1=1 11=1 2=1
+BinaryOp                 add_14                   1 1 70 72 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_15                  1 1 72 73 0=5
+UnaryOp                  reciprocal_16            1 1 73 74 0=15
+BinaryOp                 mul_17                   2 1 74 71 75 0=2
+Split                    splitncnn_5              1 2 75 76 77
+MemoryData               functional_1/stages_2_1_transformer_0_norm1_1/Reshape_2:0 0 1 78 0=64 1=1 11=1 2=1
+UnaryOp                  neg_18                   1 1 65 79 0=1
+BinaryOp                 mul_19                   2 1 79 76 80 0=2
+BinaryOp                 add_20                   2 1 80 78 81 0=0
+BinaryOp                 mul_21                   2 1 61 77 82 0=2
+BinaryOp                 add_22                   2 1 82 81 83 0=0
+Reshape                  reshape_196              1 1 83 84 0=64 1=45 2=4
+Permute                  permute_125              1 1 84 85 0=4
+Convolution              conv_10                  1 1 85 86 0=129 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8256
+Permute                  permute_126              1 1 86 87 0=3
+Slice                    split_0                  1 3 87 88 89 90 -23300=3,1,64,64 1=2
+ReLU                     relu_71                  1 1 90 91
+Softmax                  softmax_105              1 1 88 92 0=1 1=1
+BinaryOp                 mul_23                   2 1 89 92 93 0=2
+Reduction                sum_288                  1 1 93 94 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_24                   2 1 91 94 95 0=2
+Permute                  permute_127              1 1 95 96 0=4
+Convolution              conv_11                  1 1 96 97 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=4096
+Permute                  permute_128              1 1 57 98 0=4
+BinaryOp                 add_25                   2 1 98 97 99 0=0
+Split                    splitncnn_6              1 2 99 100 101
+Permute                  permute_129              1 1 101 102 0=3
+Reshape                  reshape_197              1 1 102 103 0=64 1=1 11=45 2=4
+Split                    splitncnn_7              1 3 103 104 105 106
+Reduction                mean_247                 1 1 106 107 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_8              1 2 107 108 109
+BinaryOp                 sub_26                   2 1 104 108 110 0=1
+Split                    splitncnn_9              1 2 110 111 112
+BinaryOp                 mul_27                   2 1 111 112 113 0=2
+Reduction                mean_248                 1 1 113 114 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_2_1_transformer_0_norm2_1/Reshape_1:0 0 1 115 0=64 1=1 11=1 2=1
+BinaryOp                 add_28                   1 1 114 116 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_29                  1 1 116 117 0=5
+UnaryOp                  reciprocal_30            1 1 117 118 0=15
+BinaryOp                 mul_31                   2 1 118 115 119 0=2
+Split                    splitncnn_10             1 2 119 120 121
+MemoryData               functional_1/stages_2_1_transformer_0_norm2_1/Reshape_2:0 0 1 122 0=64 1=1 11=1 2=1
+UnaryOp                  neg_32                   1 1 109 123 0=1
+BinaryOp                 mul_33                   2 1 123 120 124 0=2
+BinaryOp                 add_34                   2 1 124 122 125 0=0
+BinaryOp                 mul_35                   2 1 105 121 126 0=2
+BinaryOp                 add_36                   2 1 126 125 127 0=0
+Reshape                  reshape_198              1 1 127 128 0=64 1=45 2=4
+Permute                  permute_130              1 1 128 129 0=4
+Convolution              conv_12                  1 1 129 130 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+Swish                    silu_90                  1 1 130 131
+Convolution              conv_13                  1 1 131 132 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+BinaryOp                 add_37                   2 1 100 132 133 0=0
+Split                    splitncnn_11             1 2 133 134 135
+Permute                  permute_131              1 1 135 136 0=3
+Reshape                  reshape_199              1 1 136 137 0=64 1=1 11=45 2=4
+Split                    splitncnn_12             1 3 137 138 139 140
+Reduction                mean_249                 1 1 140 141 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_13             1 2 141 142 143
+BinaryOp                 sub_38                   2 1 138 142 144 0=1
+Split                    splitncnn_14             1 2 144 145 146
+BinaryOp                 mul_39                   2 1 145 146 147 0=2
+Reduction                mean_250                 1 1 147 148 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_2_1_transformer_1_norm1_1/Reshape_1:0 0 1 149 0=64 1=1 11=1 2=1
+BinaryOp                 add_40                   1 1 148 150 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_41                  1 1 150 151 0=5
+UnaryOp                  reciprocal_42            1 1 151 152 0=15
+BinaryOp                 mul_43                   2 1 152 149 153 0=2
+Split                    splitncnn_15             1 2 153 154 155
+MemoryData               functional_1/stages_2_1_transformer_1_norm1_1/Reshape_2:0 0 1 156 0=64 1=1 11=1 2=1
+UnaryOp                  neg_44                   1 1 143 157 0=1
+BinaryOp                 mul_45                   2 1 157 154 158 0=2
+BinaryOp                 add_46                   2 1 158 156 159 0=0
+BinaryOp                 mul_47                   2 1 139 155 160 0=2
+BinaryOp                 add_48                   2 1 160 159 161 0=0
+Reshape                  reshape_200              1 1 161 162 0=64 1=45 2=4
+Permute                  permute_132              1 1 162 163 0=4
+Convolution              conv_14                  1 1 163 164 0=129 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8256
+Permute                  permute_133              1 1 164 165 0=3
+Slice                    split_1                  1 3 165 166 167 168 -23300=3,1,64,64 1=2
+ReLU                     relu_72                  1 1 168 169
+Softmax                  softmax_106              1 1 166 170 0=1 1=1
+BinaryOp                 mul_49                   2 1 167 170 171 0=2
+Reduction                sum_289                  1 1 171 172 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_50                   2 1 169 172 173 0=2
+Permute                  permute_134              1 1 173 174 0=4
+Convolution              conv_15                  1 1 174 175 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=4096
+BinaryOp                 add_51                   2 1 134 175 176 0=0
+Split                    splitncnn_16             1 2 176 177 178
+Permute                  permute_135              1 1 178 179 0=3
+Reshape                  reshape_201              1 1 179 180 0=64 1=1 11=45 2=4
+Split                    splitncnn_17             1 3 180 181 182 183
+Reduction                mean_251                 1 1 183 184 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_18             1 2 184 185 186
+BinaryOp                 sub_52                   2 1 181 185 187 0=1
+Split                    splitncnn_19             1 2 187 188 189
+BinaryOp                 mul_53                   2 1 188 189 190 0=2
+Reduction                mean_252                 1 1 190 191 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_2_1_transformer_1_norm2_1/Reshape_1:0 0 1 192 0=64 1=1 11=1 2=1
+BinaryOp                 add_54                   1 1 191 193 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_55                  1 1 193 194 0=5
+UnaryOp                  reciprocal_56            1 1 194 195 0=15
+BinaryOp                 mul_57                   2 1 195 192 196 0=2
+Split                    splitncnn_20             1 2 196 197 198
+MemoryData               functional_1/stages_2_1_transformer_1_norm2_1/Reshape_2:0 0 1 199 0=64 1=1 11=1 2=1
+UnaryOp                  neg_58                   1 1 186 200 0=1
+BinaryOp                 mul_59                   2 1 200 197 201 0=2
+BinaryOp                 add_60                   2 1 201 199 202 0=0
+BinaryOp                 mul_61                   2 1 182 198 203 0=2
+BinaryOp                 add_62                   2 1 203 202 204 0=0
+Reshape                  reshape_202              1 1 204 205 0=64 1=45 2=4
+Permute                  permute_136              1 1 205 206 0=4
+Convolution              conv_16                  1 1 206 207 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+Swish                    silu_91                  1 1 207 208
+Convolution              conv_17                  1 1 208 209 0=64 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+BinaryOp                 add_63                   2 1 177 209 210 0=0
+Permute                  permute_137              1 1 210 211 0=3
+Reshape                  reshape_203              1 1 211 212 0=64 1=1 11=45 2=4
+Split                    splitncnn_21             1 3 212 213 214 215
+Reduction                mean_253                 1 1 215 216 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_22             1 2 216 217 218
+BinaryOp                 sub_64                   2 1 213 217 219 0=1
+Split                    splitncnn_23             1 2 219 220 221
+BinaryOp                 mul_65                   2 1 220 221 222 0=2
+Reduction                mean_254                 1 1 222 223 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_2_1_norm_1/Reshape_1:0 0 1 224 0=64 1=1 11=1 2=1
+BinaryOp                 add_66                   1 1 223 225 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_67                  1 1 225 226 0=5
+UnaryOp                  reciprocal_68            1 1 226 227 0=15
+BinaryOp                 mul_69                   2 1 227 224 228 0=2
+Split                    splitncnn_24             1 2 228 229 230
+MemoryData               functional_1/stages_2_1_norm_1/Reshape_2:0 0 1 231 0=64 1=1 11=1 2=1
+UnaryOp                  neg_70                   1 1 218 232 0=1
+BinaryOp                 mul_71                   2 1 232 229 233 0=2
+BinaryOp                 add_72                   2 1 233 231 234 0=0
+BinaryOp                 mul_73                   2 1 214 230 235 0=2
+BinaryOp                 add_74                   2 1 235 234 236 0=0
+Reshape                  reshape_204              1 1 236 237
+Permute                  permute_138              1 1 237 238 0=0
+Reshape                  reshape_205              1 1 238 239 0=64 1=18 2=10
+Permute                  permute_139              1 1 239 240 0=4
+Interp                   interpolate_66           1 1 240 241 0=2 1=0.9 2=1.0 6=0
+Convolution              conv_18                  1 1 241 242 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=8192
+Convolution              conv_19                  1 1 242 243 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+Swish                    silu_92                  1 1 243 244
+ConvolutionDepthWise     convdw_302               1 1 244 245 0=256 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=0 6=2304 7=256
+MemoryData               functional_1/stages_3_0_conv_dw_bn_1/batchnorm/mul:0 0 1 246 0=1 1=1 2=256
+MemoryData               const_fold_opt__1474     0 1 247 0=1 1=1 2=256
+BinaryOp                 mul_75                   2 1 245 246 248 0=2
+BinaryOp                 add_76                   2 1 248 247 249 0=0
+Swish                    silu_93                  1 1 249 250
+Convolution              conv_20                  1 1 250 251 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=49152
+ConvolutionDepthWise     convdw_303               1 1 251 252 0=192 1=3 11=3 12=1 13=1 14=1 2=1 3=1 4=1 5=0 6=1728 7=192
+MemoryData               functional_1/stages_3_1_conv_kxk_bn_1/batchnorm/mul:0 0 1 253 0=1 1=1 2=192
+MemoryData               const_fold_opt__1460     0 1 254 0=1 1=1 2=192
+BinaryOp                 mul_77                   2 1 252 253 255 0=2
+BinaryOp                 add_78                   2 1 255 254 256 0=0
+Swish                    silu_94                  1 1 256 257
+Convolution              conv_21                  1 1 257 258 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=0 6=18432
+Interp                   interpolate_67           1 1 258 259 0=2 1=1.2 2=1.11111116 6=0
+Permute                  permute_140              1 1 259 260 0=3
+Reshape                  reshape_206              1 1 260 261
+Permute                  permute_141              1 1 261 262 0=0
+Reshape                  reshape_207              1 1 262 263 0=96 1=15 2=4
+Split                    splitncnn_25             1 2 263 264 265
+Reshape                  reshape_208              1 1 265 266 0=96 1=1 11=15 2=4
+Split                    splitncnn_26             1 3 266 267 268 269
+Reduction                mean_255                 1 1 269 270 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_27             1 2 270 271 272
+BinaryOp                 sub_79                   2 1 267 271 273 0=1
+Split                    splitncnn_28             1 2 273 274 275
+BinaryOp                 mul_80                   2 1 274 275 276 0=2
+Reduction                mean_256                 1 1 276 277 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_0_norm1_1/Reshape_1:0 0 1 278 0=96 1=1 11=1 2=1
+BinaryOp                 add_81                   1 1 277 279 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_82                  1 1 279 280 0=5
+UnaryOp                  reciprocal_83            1 1 280 281 0=15
+BinaryOp                 mul_84                   2 1 281 278 282 0=2
+Split                    splitncnn_29             1 2 282 283 284
+MemoryData               functional_1/stages_3_1_transformer_0_norm1_1/Reshape_2:0 0 1 285 0=96 1=1 11=1 2=1
+UnaryOp                  neg_85                   1 1 272 286 0=1
+BinaryOp                 mul_86                   2 1 286 283 287 0=2
+BinaryOp                 add_87                   2 1 287 285 288 0=0
+BinaryOp                 mul_88                   2 1 268 284 289 0=2
+BinaryOp                 add_89                   2 1 289 288 290 0=0
+Reshape                  reshape_209              1 1 290 291 0=96 1=15 2=4
+Permute                  permute_142              1 1 291 292 0=4
+Convolution              conv_22                  1 1 292 293 0=193 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18528
+Permute                  permute_143              1 1 293 294 0=3
+Slice                    split_2                  1 3 294 295 296 297 -23300=3,1,96,96 1=2
+ReLU                     relu_73                  1 1 297 298
+Softmax                  softmax_107              1 1 295 299 0=1 1=1
+BinaryOp                 mul_90                   2 1 296 299 300 0=2
+Reduction                sum_290                  1 1 300 301 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_91                   2 1 298 301 302 0=2
+Permute                  permute_144              1 1 302 303 0=4
+Convolution              conv_23                  1 1 303 304 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=9216
+Permute                  permute_145              1 1 264 305 0=4
+BinaryOp                 add_92                   2 1 305 304 306 0=0
+Split                    splitncnn_30             1 2 306 307 308
+Permute                  permute_146              1 1 308 309 0=3
+Reshape                  reshape_210              1 1 309 310 0=96 1=1 11=15 2=4
+Split                    splitncnn_31             1 3 310 311 312 313
+Reduction                mean_257                 1 1 313 314 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_32             1 2 314 315 316
+BinaryOp                 sub_93                   2 1 311 315 317 0=1
+Split                    splitncnn_33             1 2 317 318 319
+BinaryOp                 mul_94                   2 1 318 319 320 0=2
+Reduction                mean_258                 1 1 320 321 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_0_norm2_1/Reshape_1:0 0 1 322 0=96 1=1 11=1 2=1
+BinaryOp                 add_95                   1 1 321 323 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_96                  1 1 323 324 0=5
+UnaryOp                  reciprocal_97            1 1 324 325 0=15
+BinaryOp                 mul_98                   2 1 325 322 326 0=2
+Split                    splitncnn_34             1 2 326 327 328
+MemoryData               functional_1/stages_3_1_transformer_0_norm2_1/Reshape_2:0 0 1 329 0=96 1=1 11=1 2=1
+UnaryOp                  neg_99                   1 1 316 330 0=1
+BinaryOp                 mul_100                  2 1 330 327 331 0=2
+BinaryOp                 add_101                  2 1 331 329 332 0=0
+BinaryOp                 mul_102                  2 1 312 328 333 0=2
+BinaryOp                 add_103                  2 1 333 332 334 0=0
+Reshape                  reshape_211              1 1 334 335 0=96 1=15 2=4
+Permute                  permute_147              1 1 335 336 0=4
+Convolution              conv_24                  1 1 336 337 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+Swish                    silu_95                  1 1 337 338
+Convolution              conv_25                  1 1 338 339 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+BinaryOp                 add_104                  2 1 307 339 340 0=0
+Split                    splitncnn_35             1 2 340 341 342
+Permute                  permute_148              1 1 342 343 0=3
+Reshape                  reshape_212              1 1 343 344 0=96 1=1 11=15 2=4
+Split                    splitncnn_36             1 3 344 345 346 347
+Reduction                mean_259                 1 1 347 348 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_37             1 2 348 349 350
+BinaryOp                 sub_105                  2 1 345 349 351 0=1
+Split                    splitncnn_38             1 2 351 352 353
+BinaryOp                 mul_106                  2 1 352 353 354 0=2
+Reduction                mean_260                 1 1 354 355 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_1_norm1_1/Reshape_1:0 0 1 356 0=96 1=1 11=1 2=1
+BinaryOp                 add_107                  1 1 355 357 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_108                 1 1 357 358 0=5
+UnaryOp                  reciprocal_109           1 1 358 359 0=15
+BinaryOp                 mul_110                  2 1 359 356 360 0=2
+Split                    splitncnn_39             1 2 360 361 362
+MemoryData               functional_1/stages_3_1_transformer_1_norm1_1/Reshape_2:0 0 1 363 0=96 1=1 11=1 2=1
+UnaryOp                  neg_111                  1 1 350 364 0=1
+BinaryOp                 mul_112                  2 1 364 361 365 0=2
+BinaryOp                 add_113                  2 1 365 363 366 0=0
+BinaryOp                 mul_114                  2 1 346 362 367 0=2
+BinaryOp                 add_115                  2 1 367 366 368 0=0
+Reshape                  reshape_213              1 1 368 369 0=96 1=15 2=4
+Permute                  permute_149              1 1 369 370 0=4
+Convolution              conv_26                  1 1 370 371 0=193 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18528
+Permute                  permute_150              1 1 371 372 0=3
+Slice                    split_3                  1 3 372 373 374 375 -23300=3,1,96,96 1=2
+ReLU                     relu_74                  1 1 375 376
+Softmax                  softmax_108              1 1 373 377 0=1 1=1
+BinaryOp                 mul_116                  2 1 374 377 378 0=2
+Reduction                sum_291                  1 1 378 379 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_117                  2 1 376 379 380 0=2
+Permute                  permute_151              1 1 380 381 0=4
+Convolution              conv_27                  1 1 381 382 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=9216
+BinaryOp                 add_118                  2 1 341 382 383 0=0
+Split                    splitncnn_40             1 2 383 384 385
+Permute                  permute_152              1 1 385 386 0=3
+Reshape                  reshape_214              1 1 386 387 0=96 1=1 11=15 2=4
+Split                    splitncnn_41             1 3 387 388 389 390
+Reduction                mean_261                 1 1 390 391 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_42             1 2 391 392 393
+BinaryOp                 sub_119                  2 1 388 392 394 0=1
+Split                    splitncnn_43             1 2 394 395 396
+BinaryOp                 mul_120                  2 1 395 396 397 0=2
+Reduction                mean_262                 1 1 397 398 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_1_norm2_1/Reshape_1:0 0 1 399 0=96 1=1 11=1 2=1
+BinaryOp                 add_121                  1 1 398 400 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_122                 1 1 400 401 0=5
+UnaryOp                  reciprocal_123           1 1 401 402 0=15
+BinaryOp                 mul_124                  2 1 402 399 403 0=2
+Split                    splitncnn_44             1 2 403 404 405
+MemoryData               functional_1/stages_3_1_transformer_1_norm2_1/Reshape_2:0 0 1 406 0=96 1=1 11=1 2=1
+UnaryOp                  neg_125                  1 1 393 407 0=1
+BinaryOp                 mul_126                  2 1 407 404 408 0=2
+BinaryOp                 add_127                  2 1 408 406 409 0=0
+BinaryOp                 mul_128                  2 1 389 405 410 0=2
+BinaryOp                 add_129                  2 1 410 409 411 0=0
+Reshape                  reshape_215              1 1 411 412 0=96 1=15 2=4
+Permute                  permute_153              1 1 412 413 0=4
+Convolution              conv_28                  1 1 413 414 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+Swish                    silu_96                  1 1 414 415
+Convolution              conv_29                  1 1 415 416 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+BinaryOp                 add_130                  2 1 384 416 417 0=0
+Split                    splitncnn_45             1 2 417 418 419
+Permute                  permute_154              1 1 419 420 0=3
+Reshape                  reshape_216              1 1 420 421 0=96 1=1 11=15 2=4
+Split                    splitncnn_46             1 3 421 422 423 424
+Reduction                mean_263                 1 1 424 425 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_47             1 2 425 426 427
+BinaryOp                 sub_131                  2 1 422 426 428 0=1
+Split                    splitncnn_48             1 2 428 429 430
+BinaryOp                 mul_132                  2 1 429 430 431 0=2
+Reduction                mean_264                 1 1 431 432 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_2_norm1_1/Reshape_1:0 0 1 433 0=96 1=1 11=1 2=1
+BinaryOp                 add_133                  1 1 432 434 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_134                 1 1 434 435 0=5
+UnaryOp                  reciprocal_135           1 1 435 436 0=15
+BinaryOp                 mul_136                  2 1 436 433 437 0=2
+Split                    splitncnn_49             1 2 437 438 439
+MemoryData               functional_1/stages_3_1_transformer_2_norm1_1/Reshape_2:0 0 1 440 0=96 1=1 11=1 2=1
+UnaryOp                  neg_137                  1 1 427 441 0=1
+BinaryOp                 mul_138                  2 1 441 438 442 0=2
+BinaryOp                 add_139                  2 1 442 440 443 0=0
+BinaryOp                 mul_140                  2 1 423 439 444 0=2
+BinaryOp                 add_141                  2 1 444 443 445 0=0
+Reshape                  reshape_217              1 1 445 446 0=96 1=15 2=4
+Permute                  permute_155              1 1 446 447 0=4
+Convolution              conv_30                  1 1 447 448 0=193 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18528
+Permute                  permute_156              1 1 448 449 0=3
+Slice                    split_4                  1 3 449 450 451 452 -23300=3,1,96,96 1=2
+ReLU                     relu_75                  1 1 452 453
+Softmax                  softmax_109              1 1 450 454 0=1 1=1
+BinaryOp                 mul_142                  2 1 451 454 455 0=2
+Reduction                sum_292                  1 1 455 456 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_143                  2 1 453 456 457 0=2
+Permute                  permute_157              1 1 457 458 0=4
+Convolution              conv_31                  1 1 458 459 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=9216
+BinaryOp                 add_144                  2 1 418 459 460 0=0
+Split                    splitncnn_50             1 2 460 461 462
+Permute                  permute_158              1 1 462 463 0=3
+Reshape                  reshape_218              1 1 463 464 0=96 1=1 11=15 2=4
+Split                    splitncnn_51             1 3 464 465 466 467
+Reduction                mean_265                 1 1 467 468 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_52             1 2 468 469 470
+BinaryOp                 sub_145                  2 1 465 469 471 0=1
+Split                    splitncnn_53             1 2 471 472 473
+BinaryOp                 mul_146                  2 1 472 473 474 0=2
+Reduction                mean_266                 1 1 474 475 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_2_norm2_1/Reshape_1:0 0 1 476 0=96 1=1 11=1 2=1
+BinaryOp                 add_147                  1 1 475 477 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_148                 1 1 477 478 0=5
+UnaryOp                  reciprocal_149           1 1 478 479 0=15
+BinaryOp                 mul_150                  2 1 479 476 480 0=2
+Split                    splitncnn_54             1 2 480 481 482
+MemoryData               functional_1/stages_3_1_transformer_2_norm2_1/Reshape_2:0 0 1 483 0=96 1=1 11=1 2=1
+UnaryOp                  neg_151                  1 1 470 484 0=1
+BinaryOp                 mul_152                  2 1 484 481 485 0=2
+BinaryOp                 add_153                  2 1 485 483 486 0=0
+BinaryOp                 mul_154                  2 1 466 482 487 0=2
+BinaryOp                 add_155                  2 1 487 486 488 0=0
+Reshape                  reshape_219              1 1 488 489 0=96 1=15 2=4
+Permute                  permute_159              1 1 489 490 0=4
+Convolution              conv_32                  1 1 490 491 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+Swish                    silu_97                  1 1 491 492
+Convolution              conv_33                  1 1 492 493 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+BinaryOp                 add_156                  2 1 461 493 494 0=0
+Split                    splitncnn_55             1 2 494 495 496
+Permute                  permute_160              1 1 496 497 0=3
+Reshape                  reshape_220              1 1 497 498 0=96 1=1 11=15 2=4
+Split                    splitncnn_56             1 3 498 499 500 501
+Reduction                mean_267                 1 1 501 502 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_57             1 2 502 503 504
+BinaryOp                 sub_157                  2 1 499 503 505 0=1
+Split                    splitncnn_58             1 2 505 506 507
+BinaryOp                 mul_158                  2 1 506 507 508 0=2
+Reduction                mean_268                 1 1 508 509 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_3_norm1_1/Reshape_1:0 0 1 510 0=96 1=1 11=1 2=1
+BinaryOp                 add_159                  1 1 509 511 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_160                 1 1 511 512 0=5
+UnaryOp                  reciprocal_161           1 1 512 513 0=15
+BinaryOp                 mul_162                  2 1 513 510 514 0=2
+Split                    splitncnn_59             1 2 514 515 516
+MemoryData               functional_1/stages_3_1_transformer_3_norm1_1/Reshape_2:0 0 1 517 0=96 1=1 11=1 2=1
+UnaryOp                  neg_163                  1 1 504 518 0=1
+BinaryOp                 mul_164                  2 1 518 515 519 0=2
+BinaryOp                 add_165                  2 1 519 517 520 0=0
+BinaryOp                 mul_166                  2 1 500 516 521 0=2
+BinaryOp                 add_167                  2 1 521 520 522 0=0
+Reshape                  reshape_221              1 1 522 523 0=96 1=15 2=4
+Permute                  permute_161              1 1 523 524 0=4
+Convolution              conv_34                  1 1 524 525 0=193 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18528
+Permute                  permute_162              1 1 525 526 0=3
+Slice                    split_5                  1 3 526 527 528 529 -23300=3,1,96,96 1=2
+ReLU                     relu_76                  1 1 529 530
+Softmax                  softmax_110              1 1 527 531 0=1 1=1
+BinaryOp                 mul_168                  2 1 528 531 532 0=2
+Reduction                sum_293                  1 1 532 533 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_169                  2 1 530 533 534 0=2
+Permute                  permute_163              1 1 534 535 0=4
+Convolution              conv_35                  1 1 535 536 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=9216
+BinaryOp                 add_170                  2 1 495 536 537 0=0
+Split                    splitncnn_60             1 2 537 538 539
+Permute                  permute_164              1 1 539 540 0=3
+Reshape                  reshape_222              1 1 540 541 0=96 1=1 11=15 2=4
+Split                    splitncnn_61             1 3 541 542 543 544
+Reduction                mean_269                 1 1 544 545 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_62             1 2 545 546 547
+BinaryOp                 sub_171                  2 1 542 546 548 0=1
+Split                    splitncnn_63             1 2 548 549 550
+BinaryOp                 mul_172                  2 1 549 550 551 0=2
+Reduction                mean_270                 1 1 551 552 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_transformer_3_norm2_1/Reshape_1:0 0 1 553 0=96 1=1 11=1 2=1
+BinaryOp                 add_173                  1 1 552 554 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_174                 1 1 554 555 0=5
+UnaryOp                  reciprocal_175           1 1 555 556 0=15
+BinaryOp                 mul_176                  2 1 556 553 557 0=2
+Split                    splitncnn_64             1 2 557 558 559
+MemoryData               functional_1/stages_3_1_transformer_3_norm2_1/Reshape_2:0 0 1 560 0=96 1=1 11=1 2=1
+UnaryOp                  neg_177                  1 1 547 561 0=1
+BinaryOp                 mul_178                  2 1 561 558 562 0=2
+BinaryOp                 add_179                  2 1 562 560 563 0=0
+BinaryOp                 mul_180                  2 1 543 559 564 0=2
+BinaryOp                 add_181                  2 1 564 563 565 0=0
+Reshape                  reshape_223              1 1 565 566 0=96 1=15 2=4
+Permute                  permute_165              1 1 566 567 0=4
+Convolution              conv_36                  1 1 567 568 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+Swish                    silu_98                  1 1 568 569
+Convolution              conv_37                  1 1 569 570 0=96 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+BinaryOp                 add_182                  2 1 538 570 571 0=0
+Permute                  permute_166              1 1 571 572 0=3
+Reshape                  reshape_224              1 1 572 573 0=96 1=1 11=15 2=4
+Split                    splitncnn_65             1 3 573 574 575 576
+Reduction                mean_271                 1 1 576 577 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_66             1 2 577 578 579
+BinaryOp                 sub_183                  2 1 574 578 580 0=1
+Split                    splitncnn_67             1 2 580 581 582
+BinaryOp                 mul_184                  2 1 581 582 583 0=2
+Reduction                mean_272                 1 1 583 584 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_3_1_norm_1/Reshape_1:0 0 1 585 0=96 1=1 11=1 2=1
+BinaryOp                 add_185                  1 1 584 586 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_186                 1 1 586 587 0=5
+UnaryOp                  reciprocal_187           1 1 587 588 0=15
+BinaryOp                 mul_188                  2 1 588 585 589 0=2
+Split                    splitncnn_68             1 2 589 590 591
+MemoryData               functional_1/stages_3_1_norm_1/Reshape_2:0 0 1 592 0=96 1=1 11=1 2=1
+UnaryOp                  neg_189                  1 1 579 593 0=1
+BinaryOp                 mul_190                  2 1 593 590 594 0=2
+BinaryOp                 add_191                  2 1 594 592 595 0=0
+BinaryOp                 mul_192                  2 1 575 591 596 0=2
+BinaryOp                 add_193                  2 1 596 595 597 0=0
+Reshape                  reshape_225              1 1 597 598
+Permute                  permute_167              1 1 598 599 0=0
+Reshape                  reshape_226              1 1 599 600 0=96 1=10 2=6
+Permute                  permute_168              1 1 600 601 0=4
+Interp                   interpolate_68           1 1 601 602 0=2 1=0.833333313 2=0.9 6=0
+Convolution              conv_38                  1 1 602 603 0=192 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=18432
+Convolution              conv_39                  1 1 603 604 0=384 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=73728
+Swish                    silu_99                  1 1 604 605
+ConvolutionDepthWise     convdw_304               1 1 605 606 0=384 1=3 11=3 12=1 13=2 14=1 2=1 3=2 4=1 5=0 6=3456 7=384
+MemoryData               functional_1/stages_4_0_conv_dw_bn_1/batchnorm/mul:0 0 1 607 0=1 1=1 2=384
+MemoryData               const_fold_opt__1458     0 1 608 0=1 1=1 2=384
+BinaryOp                 mul_194                  2 1 606 607 609 0=2
+BinaryOp                 add_195                  2 1 609 608 610 0=0
+Swish                    silu_100                 1 1 610 611
+Convolution              conv_40                  1 1 611 612 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=98304
+ConvolutionDepthWise     convdw_305               1 1 612 613 0=256 1=3 11=3 12=1 13=1 14=1 2=1 3=1 4=1 5=0 6=2304 7=256
+MemoryData               functional_1/stages_4_1_conv_kxk_bn_1/batchnorm/mul:0 0 1 614 0=1 1=1 2=256
+MemoryData               const_fold_opt__1475     0 1 615 0=1 1=1 2=256
+BinaryOp                 mul_196                  2 1 613 614 616 0=2
+BinaryOp                 add_197                  2 1 616 615 617 0=0
+Swish                    silu_101                 1 1 617 618
+Convolution              conv_41                  1 1 618 619 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=0 6=32768
+Interp                   interpolate_69           1 1 619 620 0=2 1=1.33333337 2=1.2 6=0
+Permute                  permute_169              1 1 620 621 0=3
+Reshape                  reshape_227              1 1 621 622
+Permute                  permute_170              1 1 622 623 0=0
+Reshape                  reshape_228              1 1 623 624 0=128 1=6 2=4
+Split                    splitncnn_69             1 2 624 625 626
+Reshape                  reshape_229              1 1 626 627 0=128 1=1 11=6 2=4
+Split                    splitncnn_70             1 3 627 628 629 630
+Reduction                mean_273                 1 1 630 631 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_71             1 2 631 632 633
+BinaryOp                 sub_198                  2 1 628 632 634 0=1
+Split                    splitncnn_72             1 2 634 635 636
+BinaryOp                 mul_199                  2 1 635 636 637 0=2
+Reduction                mean_274                 1 1 637 638 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_0_norm1_1/Reshape_1:0 0 1 639 0=128 1=1 11=1 2=1
+BinaryOp                 add_200                  1 1 638 640 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_201                 1 1 640 641 0=5
+UnaryOp                  reciprocal_202           1 1 641 642 0=15
+BinaryOp                 mul_203                  2 1 642 639 643 0=2
+Split                    splitncnn_73             1 2 643 644 645
+MemoryData               functional_1/stages_4_1_transformer_0_norm1_1/Reshape_2:0 0 1 646 0=128 1=1 11=1 2=1
+UnaryOp                  neg_204                  1 1 633 647 0=1
+BinaryOp                 mul_205                  2 1 647 644 648 0=2
+BinaryOp                 add_206                  2 1 648 646 649 0=0
+BinaryOp                 mul_207                  2 1 629 645 650 0=2
+BinaryOp                 add_208                  2 1 650 649 651 0=0
+Reshape                  reshape_230              1 1 651 652 0=128 1=6 2=4
+Permute                  permute_171              1 1 652 653 0=4
+Convolution              conv_42                  1 1 653 654 0=257 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32896
+Permute                  permute_172              1 1 654 655 0=3
+Slice                    split_6                  1 3 655 656 657 658 -23300=3,1,128,128 1=2
+ReLU                     relu_77                  1 1 658 659
+Softmax                  softmax_111              1 1 656 660 0=1 1=1
+BinaryOp                 mul_209                  2 1 657 660 661 0=2
+Reduction                sum_294                  1 1 661 662 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_210                  2 1 659 662 663 0=2
+Permute                  permute_173              1 1 663 664 0=4
+Convolution              conv_43                  1 1 664 665 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=16384
+Permute                  permute_174              1 1 625 666 0=4
+BinaryOp                 add_211                  2 1 666 665 667 0=0
+Split                    splitncnn_74             1 2 667 668 669
+Permute                  permute_175              1 1 669 670 0=3
+Reshape                  reshape_231              1 1 670 671 0=128 1=1 11=6 2=4
+Split                    splitncnn_75             1 3 671 672 673 674
+Reduction                mean_275                 1 1 674 675 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_76             1 2 675 676 677
+BinaryOp                 sub_212                  2 1 672 676 678 0=1
+Split                    splitncnn_77             1 2 678 679 680
+BinaryOp                 mul_213                  2 1 679 680 681 0=2
+Reduction                mean_276                 1 1 681 682 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_0_norm2_1/Reshape_1:0 0 1 683 0=128 1=1 11=1 2=1
+BinaryOp                 add_214                  1 1 682 684 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_215                 1 1 684 685 0=5
+UnaryOp                  reciprocal_216           1 1 685 686 0=15
+BinaryOp                 mul_217                  2 1 686 683 687 0=2
+Split                    splitncnn_78             1 2 687 688 689
+MemoryData               functional_1/stages_4_1_transformer_0_norm2_1/Reshape_2:0 0 1 690 0=128 1=1 11=1 2=1
+UnaryOp                  neg_218                  1 1 677 691 0=1
+BinaryOp                 mul_219                  2 1 691 688 692 0=2
+BinaryOp                 add_220                  2 1 692 690 693 0=0
+BinaryOp                 mul_221                  2 1 673 689 694 0=2
+BinaryOp                 add_222                  2 1 694 693 695 0=0
+Reshape                  reshape_232              1 1 695 696 0=128 1=6 2=4
+Permute                  permute_176              1 1 696 697 0=4
+Convolution              conv_44                  1 1 697 698 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+Swish                    silu_102                 1 1 698 699
+Convolution              conv_45                  1 1 699 700 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+BinaryOp                 add_223                  2 1 668 700 701 0=0
+Split                    splitncnn_79             1 2 701 702 703
+Permute                  permute_177              1 1 703 704 0=3
+Reshape                  reshape_233              1 1 704 705 0=128 1=1 11=6 2=4
+Split                    splitncnn_80             1 3 705 706 707 708
+Reduction                mean_277                 1 1 708 709 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_81             1 2 709 710 711
+BinaryOp                 sub_224                  2 1 706 710 712 0=1
+Split                    splitncnn_82             1 2 712 713 714
+BinaryOp                 mul_225                  2 1 713 714 715 0=2
+Reduction                mean_278                 1 1 715 716 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_1_norm1_1/Reshape_1:0 0 1 717 0=128 1=1 11=1 2=1
+BinaryOp                 add_226                  1 1 716 718 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_227                 1 1 718 719 0=5
+UnaryOp                  reciprocal_228           1 1 719 720 0=15
+BinaryOp                 mul_229                  2 1 720 717 721 0=2
+Split                    splitncnn_83             1 2 721 722 723
+MemoryData               functional_1/stages_4_1_transformer_1_norm1_1/Reshape_2:0 0 1 724 0=128 1=1 11=1 2=1
+UnaryOp                  neg_230                  1 1 711 725 0=1
+BinaryOp                 mul_231                  2 1 725 722 726 0=2
+BinaryOp                 add_232                  2 1 726 724 727 0=0
+BinaryOp                 mul_233                  2 1 707 723 728 0=2
+BinaryOp                 add_234                  2 1 728 727 729 0=0
+Reshape                  reshape_234              1 1 729 730 0=128 1=6 2=4
+Permute                  permute_178              1 1 730 731 0=4
+Convolution              conv_46                  1 1 731 732 0=257 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32896
+Permute                  permute_179              1 1 732 733 0=3
+Slice                    split_7                  1 3 733 734 735 736 -23300=3,1,128,128 1=2
+ReLU                     relu_78                  1 1 736 737
+Softmax                  softmax_112              1 1 734 738 0=1 1=1
+BinaryOp                 mul_235                  2 1 735 738 739 0=2
+Reduction                sum_295                  1 1 739 740 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_236                  2 1 737 740 741 0=2
+Permute                  permute_180              1 1 741 742 0=4
+Convolution              conv_47                  1 1 742 743 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=16384
+BinaryOp                 add_237                  2 1 702 743 744 0=0
+Split                    splitncnn_84             1 2 744 745 746
+Permute                  permute_181              1 1 746 747 0=3
+Reshape                  reshape_235              1 1 747 748 0=128 1=1 11=6 2=4
+Split                    splitncnn_85             1 3 748 749 750 751
+Reduction                mean_279                 1 1 751 752 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_86             1 2 752 753 754
+BinaryOp                 sub_238                  2 1 749 753 755 0=1
+Split                    splitncnn_87             1 2 755 756 757
+BinaryOp                 mul_239                  2 1 756 757 758 0=2
+Reduction                mean_280                 1 1 758 759 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_1_norm2_1/Reshape_1:0 0 1 760 0=128 1=1 11=1 2=1
+BinaryOp                 add_240                  1 1 759 761 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_241                 1 1 761 762 0=5
+UnaryOp                  reciprocal_242           1 1 762 763 0=15
+BinaryOp                 mul_243                  2 1 763 760 764 0=2
+Split                    splitncnn_88             1 2 764 765 766
+MemoryData               functional_1/stages_4_1_transformer_1_norm2_1/Reshape_2:0 0 1 767 0=128 1=1 11=1 2=1
+UnaryOp                  neg_244                  1 1 754 768 0=1
+BinaryOp                 mul_245                  2 1 768 765 769 0=2
+BinaryOp                 add_246                  2 1 769 767 770 0=0
+BinaryOp                 mul_247                  2 1 750 766 771 0=2
+BinaryOp                 add_248                  2 1 771 770 772 0=0
+Reshape                  reshape_236              1 1 772 773 0=128 1=6 2=4
+Permute                  permute_182              1 1 773 774 0=4
+Convolution              conv_48                  1 1 774 775 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+Swish                    silu_103                 1 1 775 776
+Convolution              conv_49                  1 1 776 777 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+BinaryOp                 add_249                  2 1 745 777 778 0=0
+Split                    splitncnn_89             1 2 778 779 780
+Permute                  permute_183              1 1 780 781 0=3
+Reshape                  reshape_237              1 1 781 782 0=128 1=1 11=6 2=4
+Split                    splitncnn_90             1 3 782 783 784 785
+Reduction                mean_281                 1 1 785 786 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_91             1 2 786 787 788
+BinaryOp                 sub_250                  2 1 783 787 789 0=1
+Split                    splitncnn_92             1 2 789 790 791
+BinaryOp                 mul_251                  2 1 790 791 792 0=2
+Reduction                mean_282                 1 1 792 793 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_2_norm1_1/Reshape_1:0 0 1 794 0=128 1=1 11=1 2=1
+BinaryOp                 add_252                  1 1 793 795 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_253                 1 1 795 796 0=5
+UnaryOp                  reciprocal_254           1 1 796 797 0=15
+BinaryOp                 mul_255                  2 1 797 794 798 0=2
+Split                    splitncnn_93             1 2 798 799 800
+MemoryData               functional_1/stages_4_1_transformer_2_norm1_1/Reshape_2:0 0 1 801 0=128 1=1 11=1 2=1
+UnaryOp                  neg_256                  1 1 788 802 0=1
+BinaryOp                 mul_257                  2 1 802 799 803 0=2
+BinaryOp                 add_258                  2 1 803 801 804 0=0
+BinaryOp                 mul_259                  2 1 784 800 805 0=2
+BinaryOp                 add_260                  2 1 805 804 806 0=0
+Reshape                  reshape_238              1 1 806 807 0=128 1=6 2=4
+Permute                  permute_184              1 1 807 808 0=4
+Convolution              conv_50                  1 1 808 809 0=257 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32896
+Permute                  permute_185              1 1 809 810 0=3
+Slice                    split_8                  1 3 810 811 812 813 -23300=3,1,128,128 1=2
+ReLU                     relu_79                  1 1 813 814
+Softmax                  softmax_113              1 1 811 815 0=1 1=1
+BinaryOp                 mul_261                  2 1 812 815 816 0=2
+Reduction                sum_296                  1 1 816 817 0=0 1=0 -23303=0 4=1 5=1
+BinaryOp                 mul_262                  2 1 814 817 818 0=2
+Permute                  permute_186              1 1 818 819 0=4
+Convolution              conv_51                  1 1 819 820 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=16384
+BinaryOp                 add_263                  2 1 779 820 821 0=0
+Split                    splitncnn_94             1 2 821 822 823
+Permute                  permute_187              1 1 823 824 0=3
+Reshape                  reshape_239              1 1 824 825 0=128 1=1 11=6 2=4
+Split                    splitncnn_95             1 3 825 826 827 828
+Reduction                mean_283                 1 1 828 829 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_96             1 2 829 830 831
+BinaryOp                 sub_264                  2 1 826 830 832 0=1
+Split                    splitncnn_97             1 2 832 833 834
+BinaryOp                 mul_265                  2 1 833 834 835 0=2
+Reduction                mean_284                 1 1 835 836 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_transformer_2_norm2_1/Reshape_1:0 0 1 837 0=128 1=1 11=1 2=1
+BinaryOp                 add_266                  1 1 836 838 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_267                 1 1 838 839 0=5
+UnaryOp                  reciprocal_268           1 1 839 840 0=15
+BinaryOp                 mul_269                  2 1 840 837 841 0=2
+Split                    splitncnn_98             1 2 841 842 843
+MemoryData               functional_1/stages_4_1_transformer_2_norm2_1/Reshape_2:0 0 1 844 0=128 1=1 11=1 2=1
+UnaryOp                  neg_270                  1 1 831 845 0=1
+BinaryOp                 mul_271                  2 1 845 842 846 0=2
+BinaryOp                 add_272                  2 1 846 844 847 0=0
+BinaryOp                 mul_273                  2 1 827 843 848 0=2
+BinaryOp                 add_274                  2 1 848 847 849 0=0
+Reshape                  reshape_240              1 1 849 850 0=128 1=6 2=4
+Permute                  permute_188              1 1 850 851 0=4
+Convolution              conv_52                  1 1 851 852 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+Swish                    silu_104                 1 1 852 853
+Convolution              conv_53                  1 1 853 854 0=128 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+BinaryOp                 add_275                  2 1 822 854 855 0=0
+Permute                  permute_189              1 1 855 856 0=3
+Reshape                  reshape_241              1 1 856 857 0=128 1=1 11=6 2=4
+Split                    splitncnn_99             1 3 857 858 859 860
+Reduction                mean_285                 1 1 860 861 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+Split                    splitncnn_100            1 2 861 862 863
+BinaryOp                 sub_276                  2 1 858 862 864 0=1
+Split                    splitncnn_101            1 2 864 865 866
+BinaryOp                 mul_277                  2 1 865 866 867 0=2
+Reduction                mean_286                 1 1 867 868 0=3 1=0 -23303=3,0,1,3 4=1 5=1
+MemoryData               functional_1/stages_4_1_norm_1/Reshape_1:0 0 1 869 0=128 1=1 11=1 2=1
+BinaryOp                 add_278                  1 1 868 870 0=0 1=1 2=1.000000e-5
+UnaryOp                  sqrt_279                 1 1 870 871 0=5
+UnaryOp                  reciprocal_280           1 1 871 872 0=15
+BinaryOp                 mul_281                  2 1 872 869 873 0=2
+Split                    splitncnn_102            1 2 873 874 875
+MemoryData               functional_1/stages_4_1_norm_1/Reshape_2:0 0 1 876 0=128 1=1 11=1 2=1
+UnaryOp                  neg_282                  1 1 863 877 0=1
+BinaryOp                 mul_283                  2 1 877 874 878 0=2
+BinaryOp                 add_284                  2 1 878 876 879 0=0
+BinaryOp                 mul_285                  2 1 859 875 880 0=2
+BinaryOp                 add_286                  2 1 880 879 881 0=0
+Reshape                  reshape_242              1 1 881 882
+Permute                  permute_190              1 1 882 883 0=0
+Reshape                  reshape_243              1 1 883 884 0=128 1=6 2=4
+Permute                  permute_191              1 1 884 885 0=4
+Interp                   interpolate_70           1 1 885 886 0=2 1=0.75 2=0.833333313 6=0
+Convolution              conv_54                  1 1 886 887 0=256 1=1 11=1 12=1 13=1 14=0 2=1 3=1 4=0 5=1 6=32768
+Pooling                  gap_64                   1 1 887 888 0=1 4=1
+Reshape                  reshape_244              1 1 888 889 0=1 1=1 2=-1
+Squeeze                  squeeze_287              1 1 889 890 -23303=2,1,2
+Split                    splitncnn_103            1 9 890 891 892 893 894 895 896 897 898 899
+InnerProduct             linear_55                1 1 899 900 0=37 1=1 2=9472
+Softmax                  softmax_114              1 1 900 901 0=0 1=1
+InnerProduct             linear_56                1 1 898 902 0=37 1=1 2=9472
+Softmax                  softmax_115              1 1 902 903 0=0 1=1
+InnerProduct             linear_57                1 1 897 904 0=37 1=1 2=9472
+Softmax                  softmax_116              1 1 904 905 0=0 1=1
+InnerProduct             linear_58                1 1 896 906 0=37 1=1 2=9472
+Softmax                  softmax_117              1 1 906 907 0=0 1=1
+InnerProduct             linear_59                1 1 895 908 0=37 1=1 2=9472
+Softmax                  softmax_118              1 1 908 909 0=0 1=1
+InnerProduct             linear_60                1 1 894 910 0=37 1=1 2=9472
+Softmax                  softmax_119              1 1 910 911 0=0 1=1
+InnerProduct             linear_61                1 1 893 912 0=37 1=1 2=9472
+Softmax                  softmax_120              1 1 912 913 0=0 1=1
+InnerProduct             linear_62                1 1 892 914 0=37 1=1 2=9472
+Softmax                  softmax_121              1 1 914 915 0=0 1=1
+InnerProduct             linear_63                1 1 891 916 0=37 1=1 2=9472
+Softmax                  softmax_122              1 1 916 917 0=0 1=1
+Concat                   cat_0                    9 1 901 917 915 913 911 909 907 905 903 out0 0=0

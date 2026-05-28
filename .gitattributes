@@ -1,0 +1,4 @@
+.gitattributes text eol=lf
+models/*.ncnn.bin binary
+models/*.ncnn.param text eol=lf
+models/*.yaml text eol=lf

@@ -330,13 +330,26 @@ fn test_ocr_model_round_trip() {
 
     let models = [
         OcrModel::CctSV2Global,
+        OcrModel::CctXsV2Global,
+        OcrModel::CctSV1Global,
+        OcrModel::CctXsV1Global,
+        OcrModel::CctSReluV1Global,
+        OcrModel::CctXsReluV1Global,
         OcrModel::ArgentinianPlatesCnn,
+        OcrModel::ArgentinianPlatesCnnSynth,
         OcrModel::EuropeanPlatesMobileVitV2,
+        OcrModel::GlobalPlatesMobileVitV2,
     ];
     for m in &models {
         let s = m.as_str();
         let parsed = OcrModel::from_str(s).expect("should parse back");
         assert_eq!(parsed, *m);
+        assert!(m.model_filename().ends_with(".onnx"));
+        assert!(m.config_filename().ends_with(".yaml"));
+        assert!(
+            fpo_rust::hub::bundled_ncnn_model(m).is_some(),
+            "missing bundled NCNN files for {s}"
+        );
     }
 }
 

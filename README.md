@@ -98,7 +98,7 @@ fpo-rust run --model cct-s-v2-global-model --keep-pad plate.jpg
 #### Run with the optional NCNN backend:
 
 ```bash
-# After building with --features ncnn-cpu and converting the model:
+# After building with --features ncnn-cpu:
 fpo-rust run --backend ncnn --model cct-s-v2-global-model --threads 4 plate.jpg
 
 # Or with explicit converted files:
@@ -133,6 +133,8 @@ fpo-rust benchmark --backend ncnn --model cct-s-v2-global-model --threads 4
 - **`cct-xs-v2-global-model`** - XSmall v2, faster but less accurate
 - **`cct-s-v1-global-model`** - Small v1, previous version
 - **`cct-xs-v1-global-model`** - XSmall v1, lightweight
+- **`cct-s-relu-v1-global-model`** - Small v1 ReLU variant
+- **`cct-xs-relu-v1-global-model`** - XSmall v1 ReLU variant
 
 ### Regional Models
 
@@ -264,9 +266,20 @@ If your NCNN install uses a non-standard link setup, these environment variables
 - `NCNN_LIB_NAME`: library name without prefix/suffix (default: `ncnn`)
 - `NCNN_EXTRA_LIBS`: extra libraries separated by commas, semicolons, or spaces
 
-### 3. Convert models
+### 3. Bundled and custom models
 
-Hub models are downloaded as ONNX, so convert them once:
+The repository includes converted NCNN files for every built-in hub model under `models/`.
+For those models, no conversion is required:
+
+```bash
+./target/release/fpo-rust run \
+  --backend ncnn \
+  --model cct-s-v2-global-model \
+  --threads 4 \
+  plate.jpg
+```
+
+To refresh a bundled model or convert into a custom directory, run:
 
 ```bash
 ./target/release/fpo-rust convert-ncnn --model cct-s-v2-global-model --pnnx pnnx
@@ -288,16 +301,6 @@ The converter command passes `inputshape=[1,img_height,img_width,channels]` from
 ```
 
 The default is `fp16=0` for portability. Add `--fp16` if you want PNNX to store fp16 weights and have verified accuracy/performance on your NCNN build.
-
-### 4. Run inference
-
-```bash
-./target/release/fpo-rust run \
-  --backend ncnn \
-  --model cct-s-v2-global-model \
-  --threads 4 \
-  plate.jpg
-```
 
 If NCNN reports a missing blob name, inspect the `.ncnn.param` file or Netron graph and pass explicit names:
 
@@ -332,6 +335,12 @@ The main inference engine.
 
 - `from_files(onnx_path: impl AsRef<Path>, config_path: impl AsRef<Path>) -> Result<Self>`
   - Load a custom ONNX model with its config
+
+- `from_hub_ncnn(model: OcrModel, force_download: bool) -> Result<Self>` (feature `ncnn`)
+  - Load a bundled NCNN hub model, falling back to converted cache files
+
+- `from_hub_to_dir_ncnn(model: OcrModel, save_dir: &Path, force_download: bool) -> Result<Self>` (feature `ncnn`)
+  - Load a converted NCNN model from a specific directory
 
 - `from_ncnn_files(param_path, bin_path, config_path) -> Result<Self>` (feature `ncnn`)
   - Load a converted NCNN model with default blob-name inference
@@ -387,7 +396,12 @@ pub enum OcrModel {
     CctXsV2Global,
     CctSV1Global,
     CctXsV1Global,
-    // ... and more regional models
+    CctSReluV1Global,
+    CctXsReluV1Global,
+    ArgentinianPlatesCnn,
+    ArgentinianPlatesCnnSynth,
+    EuropeanPlatesMobileVitV2,
+    GlobalPlatesMobileVitV2,
 }
 ```
 
