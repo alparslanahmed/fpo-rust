@@ -67,9 +67,10 @@ mod ffi {
             mat: *mut NcnnMatT,
         ) -> c_int;
 
-        pub fn ncnn_mat_create_external_3d(
+        pub fn ncnn_mat_create_external_4d(
             w: c_int,
             h: c_int,
+            d: c_int,
             c: c_int,
             data: *mut c_void,
             allocator: *mut c_void,
@@ -227,8 +228,15 @@ struct NcnnMat {
 }
 
 impl NcnnMat {
-    unsafe fn new_external_3d(w: i32, h: i32, c: i32, data: *mut c_void) -> anyhow::Result<Self> {
-        let ptr = unsafe { ffi::ncnn_mat_create_external_3d(w, h, c, data, std::ptr::null_mut()) };
+    unsafe fn new_external_4d(
+        w: i32,
+        h: i32,
+        d: i32,
+        c: i32,
+        data: *mut c_void,
+    ) -> anyhow::Result<Self> {
+        let ptr =
+            unsafe { ffi::ncnn_mat_create_external_4d(w, h, d, c, data, std::ptr::null_mut()) };
         if ptr.is_null() {
             bail!("Cannot create NCNN input mat");
         }
@@ -454,11 +462,12 @@ impl NcnnBackend {
         let mut input_data: Vec<f32> = raw_nhwc.iter().map(|&v| v as f32).collect();
         let input = unsafe {
             // pnnx preserves the ONNX input tensor order. The existing fast-plate-ocr models use
-            // NHWC shape [1, H, W, C], which maps to NCNN Mat dimensions w=C, h=W, c=H.
-            NcnnMat::new_external_3d(
+            // NHWC shape [1, H, W, C], which maps to NCNN Mat dimensions w=C, h=W, d=H, c=1.
+            NcnnMat::new_external_4d(
                 c as i32,
                 w as i32,
                 h as i32,
+                1,
                 input_data.as_mut_ptr().cast::<c_void>(),
             )?
         };
