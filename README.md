@@ -98,7 +98,7 @@ fpo-rust run --model cct-s-v2-global-model --keep-pad plate.jpg
 #### Run with the optional NCNN backend:
 
 ```bash
-# After building with --features ncnn-cpu:
+# After building with --features ncnn-cpu or --features ncnn-vulkan:
 fpo-rust run --backend ncnn --model cct-s-v2-global-model --threads 4 plate.jpg
 
 # Or with explicit converted files:
@@ -233,7 +233,7 @@ CPU-only is the most predictable path on Raspberry Pi 5. Vulkan can be experimen
 ```bash
 sudo apt update
 sudo apt install -y build-essential git cmake clang libclang-dev \
-  libprotobuf-dev protobuf-compiler
+  libprotobuf-dev protobuf-compiler libgomp1
 
 git clone --recursive https://github.com/Tencent/ncnn.git
 cd ncnn
@@ -264,7 +264,24 @@ If your NCNN install uses a non-standard link setup, these environment variables
 - `NCNN_LIB_DIR`: directory containing `libncnn.a` or `libncnn.so`
 - `NCNN_LINK_KIND`: `static` or `dylib` (default: `static`)
 - `NCNN_LIB_NAME`: library name without prefix/suffix (default: `ncnn`)
+- `NCNN_OPENMP_LIB`: OpenMP runtime for static Linux builds (default: `gomp`; use `omp` for LLVM OpenMP or `none` for `-DNCNN_OPENMP=OFF`)
+- `NCNN_VULKAN`: set to `1` to link `libvulkan` when using a Vulkan-enabled NCNN build
 - `NCNN_EXTRA_LIBS`: extra libraries separated by commas, semicolons, or spaces
+
+For an NCNN build compiled with `-DNCNN_VULKAN=ON`, install Vulkan development headers/libraries and build with:
+
+```bash
+sudo apt install -y libvulkan-dev
+
+export NCNN_LIB_DIR=/opt/ncnn/lib
+cargo build --release --features ncnn-vulkan
+```
+
+On older revisions of this crate, the equivalent manual workaround is:
+
+```bash
+NCNN_EXTRA_LIBS=gomp,vulkan cargo build --release --features ncnn-cpu
+```
 
 ### 3. Bundled and custom models
 
@@ -502,7 +519,7 @@ cargo run --release -- benchmark --model cct-s-v2-global-model --iters 1000
 ## Dependencies
 
 - **tract-onnx** - Pure-Rust ONNX runtime
-- **Tencent NCNN C API** - Optional linked backend (feature `ncnn` / `ncnn-cpu`)
+- **Tencent NCNN C API** - Optional linked backend (feature `ncnn`, `ncnn-cpu`, or `ncnn-vulkan`)
 - **image** - Image loading and processing
 - **serde** - Serialization framework
 - **serde_yml** - YAML parsing for config files

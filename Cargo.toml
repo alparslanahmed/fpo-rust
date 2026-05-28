@@ -27,6 +27,7 @@ default = []
 # kept for Raspberry Pi 5 build commands and CPU-only deployments.
 ncnn = []
 ncnn-cpu = ["ncnn"]
+ncnn-vulkan = ["ncnn"]
 
 [dependencies]
 # Pure-Rust ONNX Runtime

@@ -5,6 +5,8 @@ fn main() {
     println!("cargo:rerun-if-env-changed=NCNN_LINK_KIND");
     println!("cargo:rerun-if-env-changed=NCNN_LIB_NAME");
     println!("cargo:rerun-if-env-changed=NCNN_CXX_STDLIB");
+    println!("cargo:rerun-if-env-changed=NCNN_OPENMP_LIB");
+    println!("cargo:rerun-if-env-changed=NCNN_VULKAN");
     println!("cargo:rerun-if-env-changed=NCNN_EXTRA_LIBS");
 
     if env::var_os("CARGO_FEATURE_NCNN").is_none() {
@@ -22,23 +24,53 @@ fn main() {
     let lib_name = env::var("NCNN_LIB_NAME").unwrap_or_else(|_| "ncnn".to_owned());
     println!("cargo:rustc-link-lib={link_kind}={lib_name}");
 
-    if let Ok(extra_libs) = env::var("NCNN_EXTRA_LIBS") {
-        for lib in extra_libs
-            .split(|c| c == ',' || c == ';' || c == ' ')
-            .filter(|s| !s.trim().is_empty())
-        {
-            println!("cargo:rustc-link-lib={}", lib.trim());
-        }
-    }
-
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
     if target_os == "linux" {
         let cxx = env::var("NCNN_CXX_STDLIB").unwrap_or_else(|_| "stdc++".to_owned());
         println!("cargo:rustc-link-lib=dylib={cxx}");
         println!("cargo:rustc-link-lib=dylib=pthread");
         println!("cargo:rustc-link-lib=dylib=dl");
+        println!("cargo:rustc-link-lib=dylib=m");
+
+        if link_kind == "static" {
+            let openmp = env::var("NCNN_OPENMP_LIB").unwrap_or_else(|_| "gomp".to_owned());
+            for lib in split_link_libs(&openmp).filter(|lib| !is_disabled(lib)) {
+                println!("cargo:rustc-link-lib=dylib={lib}");
+            }
+        }
+
+        if env_flag("NCNN_VULKAN") || env::var_os("CARGO_FEATURE_NCNN_VULKAN").is_some() {
+            println!("cargo:rustc-link-lib=dylib=vulkan");
+        }
     } else if target_os == "macos" {
         let cxx = env::var("NCNN_CXX_STDLIB").unwrap_or_else(|_| "c++".to_owned());
         println!("cargo:rustc-link-lib=dylib={cxx}");
     }
+
+    if let Ok(extra_libs) = env::var("NCNN_EXTRA_LIBS") {
+        for lib in split_link_libs(&extra_libs).filter(|lib| !is_disabled(lib)) {
+            println!("cargo:rustc-link-lib={lib}");
+        }
+    }
+}
+
+fn split_link_libs(value: &str) -> impl Iterator<Item = &str> {
+    value
+        .split(|c| c == ',' || c == ';' || c == ' ')
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+}
+
+fn is_disabled(value: &str) -> bool {
+    matches!(
+        value,
+        "0" | "false" | "False" | "off" | "OFF" | "none" | "NONE"
+    )
+}
+
+fn env_flag(name: &str) -> bool {
+    env::var(name).map_or(false, |value| {
+        let value = value.trim();
+        !value.is_empty() && !is_disabled(value)
+    })
 }
