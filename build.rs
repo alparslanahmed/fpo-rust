@@ -7,6 +7,7 @@ fn main() {
     println!("cargo:rerun-if-env-changed=NCNN_CXX_STDLIB");
     println!("cargo:rerun-if-env-changed=NCNN_OPENMP_LIB");
     println!("cargo:rerun-if-env-changed=NCNN_VULKAN");
+    println!("cargo:rerun-if-env-changed=NCNN_VULKAN_LIBS");
     println!("cargo:rerun-if-env-changed=NCNN_EXTRA_LIBS");
 
     if env::var_os("CARGO_FEATURE_NCNN").is_none() {
@@ -41,6 +42,16 @@ fn main() {
 
         if env_flag("NCNN_VULKAN") || env::var_os("CARGO_FEATURE_NCNN_VULKAN").is_some() {
             println!("cargo:rustc-link-lib=dylib=vulkan");
+
+            if link_kind == "static" {
+                let vulkan_libs = env::var("NCNN_VULKAN_LIBS").unwrap_or_else(|_| {
+                    "glslang,MachineIndependent,GenericCodeGen,SPIRV,OGLCompiler,OSDependent"
+                        .to_owned()
+                });
+                for lib in split_link_libs(&vulkan_libs).filter(|lib| !is_disabled(lib)) {
+                    println!("cargo:rustc-link-lib={lib}");
+                }
+            }
         }
     } else if target_os == "macos" {
         let cxx = env::var("NCNN_CXX_STDLIB").unwrap_or_else(|_| "c++".to_owned());
