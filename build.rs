@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, process::Command};
 
 fn main() {
     println!("cargo:rerun-if-env-changed=NCNN_LIB_DIR");
@@ -44,13 +44,7 @@ fn main() {
             println!("cargo:rustc-link-lib=dylib=vulkan");
 
             if link_kind == "static" {
-                let vulkan_libs = env::var("NCNN_VULKAN_LIBS").unwrap_or_else(|_| {
-                    "glslang,MachineIndependent,GenericCodeGen,SPIRV,OGLCompiler,OSDependent"
-                        .to_owned()
-                });
-                for lib in split_link_libs(&vulkan_libs).filter(|lib| !is_disabled(lib)) {
-                    println!("cargo:rustc-link-lib={lib}");
-                }
+                link_static_vulkan_shader_libs();
             }
         }
     } else if target_os == "macos" {
@@ -62,6 +56,55 @@ fn main() {
         for lib in split_link_libs(&extra_libs).filter(|lib| !is_disabled(lib)) {
             println!("cargo:rustc-link-lib={lib}");
         }
+    }
+}
+
+fn link_static_vulkan_shader_libs() {
+    if let Ok(vulkan_libs) = env::var("NCNN_VULKAN_LIBS") {
+        link_libs(&vulkan_libs);
+        return;
+    }
+
+    if link_pkg_config_libs(&["glslang", "spirv"]) {
+        return;
+    }
+
+    link_libs("glslang,MachineIndependent,GenericCodeGen,SPIRV,OSDependent");
+}
+
+fn link_pkg_config_libs(packages: &[&str]) -> bool {
+    let output = Command::new("pkg-config")
+        .arg("--libs")
+        .arg("--static")
+        .args(packages)
+        .output();
+
+    let Ok(output) = output else {
+        return false;
+    };
+    if !output.status.success() {
+        return false;
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut linked_any = false;
+    for token in stdout.split_whitespace() {
+        if let Some(path) = token.strip_prefix("-L") {
+            println!("cargo:rustc-link-search=native={path}");
+        } else if let Some(lib) = token.strip_prefix("-l") {
+            println!("cargo:rustc-link-lib={lib}");
+            linked_any = true;
+        } else if token == "-pthread" {
+            println!("cargo:rustc-link-lib=pthread");
+        }
+    }
+
+    linked_any
+}
+
+fn link_libs(value: &str) {
+    for lib in split_link_libs(value).filter(|lib| !is_disabled(lib)) {
+        println!("cargo:rustc-link-lib={lib}");
     }
 }
 

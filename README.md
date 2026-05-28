@@ -266,13 +266,13 @@ If your NCNN install uses a non-standard link setup, these environment variables
 - `NCNN_LIB_NAME`: library name without prefix/suffix (default: `ncnn`)
 - `NCNN_OPENMP_LIB`: OpenMP runtime for static Linux builds (default: `gomp`; use `omp` for LLVM OpenMP or `none` for `-DNCNN_OPENMP=OFF`)
 - `NCNN_VULKAN`: set to `1` to link `libvulkan` when using a Vulkan-enabled NCNN build
-- `NCNN_VULKAN_LIBS`: glslang/static shader compiler libraries for Vulkan builds (default: `glslang,MachineIndependent,GenericCodeGen,SPIRV,OGLCompiler,OSDependent`)
+- `NCNN_VULKAN_LIBS`: override glslang/static shader compiler libraries for Vulkan builds. By default the build script uses `pkg-config --libs --static glslang spirv`, then falls back to `glslang,MachineIndependent,GenericCodeGen,SPIRV,OSDependent`.
 - `NCNN_EXTRA_LIBS`: extra libraries separated by commas, semicolons, or spaces
 
 For an NCNN build compiled with `-DNCNN_VULKAN=ON`, install Vulkan and glslang development libraries and build with:
 
 ```bash
-sudo apt install -y libvulkan-dev glslang-dev
+sudo apt install -y libvulkan-dev glslang-dev pkg-config
 
 export NCNN_LIB_DIR=/opt/ncnn/lib
 cargo build --release --features ncnn-vulkan
@@ -281,7 +281,7 @@ cargo build --release --features ncnn-vulkan
 On older revisions of this crate, the equivalent manual workaround is:
 
 ```bash
-NCNN_EXTRA_LIBS=gomp,vulkan,glslang,MachineIndependent,GenericCodeGen,SPIRV,OGLCompiler,OSDependent \
+NCNN_EXTRA_LIBS=gomp,vulkan,glslang,MachineIndependent,GenericCodeGen,SPIRV,OSDependent \
   cargo build --release --features ncnn-cpu
 ```
 
