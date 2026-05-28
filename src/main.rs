@@ -3,6 +3,7 @@
 use anyhow::{bail, Context};
 use fpo_rust::{hub::download_model, LicensePlateRecognizer, OcrModel, PlateConfig, PlateInput};
 use std::{
+    collections::{HashMap, HashSet},
     path::{Path, PathBuf},
     process::{self, Command},
 };
@@ -553,14 +554,113 @@ fn cmd_convert_ncnn(args: &[String]) -> anyhow::Result<()> {
         bail!("pnnx conversion failed with status {status}");
     }
 
+    let removed_layers = scrub_unsupported_ncnn_layers(&param_path)?;
+
     println!("Wrote NCNN model:");
     println!("  {}", param_path.display());
     println!("  {}", bin_path.display());
+    if removed_layers > 0 {
+        println!("Removed unsupported NCNN no-op layers: {removed_layers}");
+    }
     if cfg_path.is_file() {
         println!("Use with config:");
         println!("  {}", cfg_path.display());
     }
     Ok(())
+}
+
+fn scrub_unsupported_ncnn_layers(param_path: &Path) -> anyhow::Result<usize> {
+    let text = std::fs::read_to_string(param_path)
+        .with_context(|| format!("Cannot read NCNN param: {}", param_path.display()))?;
+    let lines: Vec<String> = text.lines().map(str::to_owned).collect();
+    if lines.len() < 2 {
+        bail!("Invalid NCNN param file: {}", param_path.display());
+    }
+
+    let header = lines[1].split_whitespace().collect::<Vec<_>>();
+    if header.len() != 2 {
+        bail!(
+            "Invalid NCNN param header in {}: {}",
+            param_path.display(),
+            lines[1]
+        );
+    }
+
+    let mut aliases = HashMap::<String, String>::new();
+    let mut removed = HashSet::<usize>::new();
+
+    for (index, line) in lines.iter().enumerate().skip(2) {
+        let tokens = line.split_whitespace().collect::<Vec<_>>();
+        if tokens.first() == Some(&"Tensor.to") {
+            if tokens.len() >= 6 && tokens[2] == "1" && tokens[3] == "1" {
+                aliases.insert(tokens[5].to_owned(), tokens[4].to_owned());
+                removed.insert(index);
+            } else {
+                bail!("Unsupported Tensor.to shape in {}", param_path.display());
+            }
+        }
+    }
+
+    if aliases.is_empty() {
+        return Ok(0);
+    }
+
+    let mut output = vec![lines[0].clone(), String::new()];
+    let mut top_names = HashSet::<String>::new();
+
+    for (index, line) in lines.iter().enumerate().skip(2) {
+        if removed.contains(&index) {
+            continue;
+        }
+
+        let mut tokens = line
+            .split_whitespace()
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+
+        if tokens.len() >= 4 {
+            let bottom_count = tokens[2].parse::<usize>().with_context(|| {
+                format!("Invalid NCNN bottom count in {}", param_path.display())
+            })?;
+            let top_count = tokens[3]
+                .parse::<usize>()
+                .with_context(|| format!("Invalid NCNN top count in {}", param_path.display()))?;
+
+            if tokens.len() < 4 + bottom_count + top_count {
+                bail!("Invalid NCNN layer line in {}", param_path.display());
+            }
+
+            for token in tokens.iter_mut().skip(4).take(bottom_count) {
+                *token = resolve_ncnn_alias(&aliases, token);
+            }
+
+            for token in tokens.iter().skip(4 + bottom_count).take(top_count) {
+                top_names.insert(token.clone());
+            }
+        }
+
+        output.push(tokens.join(" "));
+    }
+
+    output[1] = format!("{} {}", output.len() - 2, top_names.len());
+    std::fs::write(param_path, format!("{}\n", output.join("\n")))
+        .with_context(|| format!("Cannot write NCNN param: {}", param_path.display()))?;
+
+    Ok(removed.len())
+}
+
+fn resolve_ncnn_alias(aliases: &HashMap<String, String>, name: &str) -> String {
+    let mut current = name;
+    let mut seen = HashSet::<&str>::new();
+
+    while let Some(next) = aliases.get(current) {
+        if !seen.insert(current) {
+            break;
+        }
+        current = next;
+    }
+
+    current.to_owned()
 }
 
 fn ncnn_paths_for_onnx(
@@ -579,6 +679,43 @@ fn ncnn_paths_for_onnx(
         parent.join(format!("{stem}.ncnn.param")),
         parent.join(format!("{stem}.ncnn.bin")),
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::scrub_unsupported_ncnn_layers;
+    use std::io::Write;
+
+    #[test]
+    fn scrubs_tensor_to_noop_layer() {
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+        write!(
+            file,
+            "{}",
+            "\
+7767517
+3 3
+Input in0 0 1 in0
+Tensor.to Tensor.to_0 1 1 in0 1
+BinaryOp mul_0 1 1 1 out 0=2 1=1 2=3.92156886e-3
+"
+        )
+        .unwrap();
+
+        let removed = scrub_unsupported_ncnn_layers(file.path()).unwrap();
+        assert_eq!(removed, 1);
+
+        let text = std::fs::read_to_string(file.path()).unwrap();
+        assert_eq!(
+            text,
+            "\
+7767517
+2 2
+Input in0 0 1 in0
+BinaryOp mul_0 1 1 in0 out 0=2 1=1 2=3.92156886e-3
+"
+        );
+    }
 }
 
 fn main() {
