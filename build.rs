@@ -1,0 +1,44 @@
+use std::env;
+
+fn main() {
+    println!("cargo:rerun-if-env-changed=NCNN_LIB_DIR");
+    println!("cargo:rerun-if-env-changed=NCNN_LINK_KIND");
+    println!("cargo:rerun-if-env-changed=NCNN_LIB_NAME");
+    println!("cargo:rerun-if-env-changed=NCNN_CXX_STDLIB");
+    println!("cargo:rerun-if-env-changed=NCNN_EXTRA_LIBS");
+
+    if env::var_os("CARGO_FEATURE_NCNN").is_none() {
+        return;
+    }
+
+    if let Some(lib_dir) = env::var_os("NCNN_LIB_DIR") {
+        println!(
+            "cargo:rustc-link-search=native={}",
+            lib_dir.to_string_lossy()
+        );
+    }
+
+    let link_kind = env::var("NCNN_LINK_KIND").unwrap_or_else(|_| "static".to_owned());
+    let lib_name = env::var("NCNN_LIB_NAME").unwrap_or_else(|_| "ncnn".to_owned());
+    println!("cargo:rustc-link-lib={link_kind}={lib_name}");
+
+    if let Ok(extra_libs) = env::var("NCNN_EXTRA_LIBS") {
+        for lib in extra_libs
+            .split(|c| c == ',' || c == ';' || c == ' ')
+            .filter(|s| !s.trim().is_empty())
+        {
+            println!("cargo:rustc-link-lib={}", lib.trim());
+        }
+    }
+
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+    if target_os == "linux" {
+        let cxx = env::var("NCNN_CXX_STDLIB").unwrap_or_else(|_| "stdc++".to_owned());
+        println!("cargo:rustc-link-lib=dylib={cxx}");
+        println!("cargo:rustc-link-lib=dylib=pthread");
+        println!("cargo:rustc-link-lib=dylib=dl");
+    } else if target_os == "macos" {
+        let cxx = env::var("NCNN_CXX_STDLIB").unwrap_or_else(|_| "c++".to_owned());
+        println!("cargo:rustc-link-lib=dylib={cxx}");
+    }
+}

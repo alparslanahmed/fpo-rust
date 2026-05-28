@@ -2,6 +2,7 @@
 name = "fpo-rust"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 description = "Fast license plate OCR inference in pure Rust - a port of fast-plate-ocr with ONNX model support"
 license = "MIT"
 repository = "https://github.com/alparslanahmed/fpo-rust"
@@ -19,6 +20,13 @@ path = "src/main.rs"
 [lib]
 name = "fpo_rust"
 path = "src/lib.rs"
+
+[features]
+default = []
+# Links against a user-provided Tencent NCNN build. `ncnn-cpu` is an alias
+# kept for Raspberry Pi 5 build commands and CPU-only deployments.
+ncnn = []
+ncnn-cpu = ["ncnn"]
 
 [dependencies]
 # Pure-Rust ONNX Runtime

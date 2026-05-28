@@ -1,4 +1,4 @@
-//! ONNX-Runtime-based license-plate recognizer.
+//! License-plate recognizer with selectable inference backends.
 
 use crate::{
     config::PlateConfig,
@@ -7,10 +7,7 @@ use crate::{
 };
 use anyhow::{bail, Context};
 use image::DynamicImage;
-use std::{
-    path::Path,
-    time::Instant,
-};
+use std::{path::Path, time::Instant};
 use tract_onnx::prelude::*;
 
 // ---------------------------------------------------------------------------
@@ -47,18 +44,25 @@ impl From<DynamicImage> for PlateInput<'_> {
 
 type OnnxModel = SimplePlan<TypedFact, Box<dyn TypedOp>, Graph<TypedFact, Box<dyn TypedOp>>>;
 
-/// Inference class for license-plate OCR using tract-onnx.
-pub struct LicensePlateRecognizer {
-    /// Loaded ONNX plan (optimised graph).
+struct TractBackend {
     model: OnnxModel,
+    plate_output_idx: usize,
+    region_output_idx: Option<usize>,
+}
+
+enum InferenceBackend {
+    Tract(TractBackend),
+    #[cfg(feature = "ncnn")]
+    Ncnn(crate::ncnn_backend::NcnnBackend),
+}
+
+/// Inference class for license-plate OCR.
+pub struct LicensePlateRecognizer {
+    backend: InferenceBackend,
     /// Plate configuration (image size, alphabet, etc.).
     pub config: PlateConfig,
     /// Human-readable model name.
     pub model_name: String,
-    /// Index of the plate output in `model.run()` results.
-    plate_output_idx: usize,
-    /// Index of the region output (if any).
-    region_output_idx: Option<usize>,
     /// `true` when the model has a region head and the config defines regions.
     has_region_head: bool,
 }
@@ -92,7 +96,7 @@ impl LicensePlateRecognizer {
 
         let model = Self::load_model(onnx_path, &config)?;
 
-        Self::from_model_and_config(model, config, model_name)
+        Self::from_tract_model_and_config(model, config, model_name)
     }
 
     /// Download (if necessary) and load a model from the hub.
@@ -117,6 +121,141 @@ impl LicensePlateRecognizer {
         Ok(recognizer)
     }
 
+    /// Download a hub model config and load an already-converted NCNN model from the same cache
+    /// directory.
+    ///
+    /// The hub distributes ONNX files. Run `fpo-rust convert-ncnn --model <NAME>` first to create
+    /// the matching `.ncnn.param` and `.ncnn.bin` files.
+    #[cfg(feature = "ncnn")]
+    pub fn from_hub_ncnn(model: OcrModel, force_download: bool) -> anyhow::Result<Self> {
+        Self::from_hub_ncnn_with_options(
+            model,
+            force_download,
+            crate::ncnn_backend::NcnnOptions::default(),
+        )
+    }
+
+    /// Download a hub model config and load converted NCNN files with explicit runtime options.
+    #[cfg(feature = "ncnn")]
+    pub fn from_hub_ncnn_with_options(
+        model: OcrModel,
+        force_download: bool,
+        options: crate::ncnn_backend::NcnnOptions,
+    ) -> anyhow::Result<Self> {
+        let model_name = model.as_str().to_owned();
+        let (onnx_path, cfg_path) = download_model(&model, None, force_download)?;
+        let (param_path, bin_path) = crate::ncnn_backend::ncnn_paths_for_onnx(&onnx_path)?;
+
+        if !param_path.is_file() || !bin_path.is_file() {
+            bail!(
+                "NCNN files not found for hub model '{model_name}'. Run: fpo-rust convert-ncnn --model {model_name}"
+            );
+        }
+
+        let mut recognizer =
+            Self::from_ncnn_files_with_options(param_path, bin_path, cfg_path, options)?;
+        recognizer.model_name = format!("{model_name} (ncnn)");
+        Ok(recognizer)
+    }
+
+    /// Download a hub model config to a specific directory and load an already-converted NCNN
+    /// model from that directory.
+    #[cfg(feature = "ncnn")]
+    pub fn from_hub_to_dir_ncnn(
+        model: OcrModel,
+        save_dir: &Path,
+        force_download: bool,
+    ) -> anyhow::Result<Self> {
+        Self::from_hub_to_dir_ncnn_with_options(
+            model,
+            save_dir,
+            force_download,
+            crate::ncnn_backend::NcnnOptions::default(),
+        )
+    }
+
+    /// Download a hub model config to a specific directory and load converted NCNN files with
+    /// explicit runtime options.
+    #[cfg(feature = "ncnn")]
+    pub fn from_hub_to_dir_ncnn_with_options(
+        model: OcrModel,
+        save_dir: &Path,
+        force_download: bool,
+        options: crate::ncnn_backend::NcnnOptions,
+    ) -> anyhow::Result<Self> {
+        let model_name = model.as_str().to_owned();
+        let (onnx_path, cfg_path) = download_model(&model, Some(save_dir), force_download)?;
+        let (param_path, bin_path) = crate::ncnn_backend::ncnn_paths_for_onnx(&onnx_path)?;
+
+        if !param_path.is_file() || !bin_path.is_file() {
+            bail!(
+                "NCNN files not found for hub model '{model_name}' in {}. Run: fpo-rust convert-ncnn --model {model_name} --out-dir {}",
+                save_dir.display(),
+                save_dir.display()
+            );
+        }
+
+        let mut recognizer =
+            Self::from_ncnn_files_with_options(param_path, bin_path, cfg_path, options)?;
+        recognizer.model_name = format!("{model_name} (ncnn)");
+        Ok(recognizer)
+    }
+
+    /// Build a recognizer from an NCNN `.param`/`.bin` pair and a plate config.
+    #[cfg(feature = "ncnn")]
+    pub fn from_ncnn_files(
+        ncnn_param_path: impl AsRef<Path>,
+        ncnn_bin_path: impl AsRef<Path>,
+        plate_config_path: impl AsRef<Path>,
+    ) -> anyhow::Result<Self> {
+        Self::from_ncnn_files_with_options(
+            ncnn_param_path,
+            ncnn_bin_path,
+            plate_config_path,
+            crate::ncnn_backend::NcnnOptions::default(),
+        )
+    }
+
+    /// Build a recognizer from an NCNN `.param`/`.bin` pair with explicit runtime options.
+    #[cfg(feature = "ncnn")]
+    pub fn from_ncnn_files_with_options(
+        ncnn_param_path: impl AsRef<Path>,
+        ncnn_bin_path: impl AsRef<Path>,
+        plate_config_path: impl AsRef<Path>,
+        options: crate::ncnn_backend::NcnnOptions,
+    ) -> anyhow::Result<Self> {
+        let param_path = ncnn_param_path.as_ref();
+        let bin_path = ncnn_bin_path.as_ref();
+        let cfg_path = plate_config_path.as_ref();
+
+        if !cfg_path.exists() {
+            bail!("Plate config not found: {}", cfg_path.display());
+        }
+
+        let model_name = param_path
+            .file_stem()
+            .map(|s| s.to_string_lossy().into_owned())
+            .unwrap_or_else(|| "custom-ncnn".to_owned());
+        let config = PlateConfig::from_yaml(cfg_path)?;
+        let ncnn =
+            crate::ncnn_backend::NcnnBackend::from_files(param_path, bin_path, &config, options)?;
+        let has_region_head = ncnn.has_region_output() && config.has_region_recognition();
+
+        if !has_region_head && config.has_region_recognition() {
+            eprintln!(
+                "Warning: plate config declares regions but no NCNN region output is configured. \
+                 Region predictions will be disabled."
+            );
+        }
+
+        Ok(Self {
+            backend: InferenceBackend::Ncnn(ncnn),
+            config,
+            model_name,
+            has_region_head,
+        })
+    }
+
     // -----------------------------------------------------------------------
     // Internal helpers
     // -----------------------------------------------------------------------
@@ -131,7 +270,10 @@ impl LicensePlateRecognizer {
             .context("Cannot parse ONNX model")?
             .with_input_fact(
                 0,
-                InferenceFact::dt_shape(u8::datum_type(), tvec![1usize, h as usize, w as usize, c as usize]),
+                InferenceFact::dt_shape(
+                    u8::datum_type(),
+                    tvec![1usize, h as usize, w as usize, c as usize],
+                ),
             )
             .context("Cannot set input fact")?
             .into_optimized()
@@ -142,7 +284,7 @@ impl LicensePlateRecognizer {
         Ok(plan)
     }
 
-    fn from_model_and_config(
+    fn from_tract_model_and_config(
         model: OnnxModel,
         config: PlateConfig,
         model_name: String,
@@ -170,12 +312,14 @@ impl LicensePlateRecognizer {
             );
         }
 
-        Ok(LicensePlateRecognizer {
-            model,
+        Ok(Self {
+            backend: InferenceBackend::Tract(TractBackend {
+                model,
+                plate_output_idx,
+                region_output_idx,
+            }),
             config,
             model_name,
-            plate_output_idx,
-            region_output_idx,
             has_region_head,
         })
     }
@@ -203,17 +347,15 @@ impl LicensePlateRecognizer {
             .iter()
             .map(|inp| match inp {
                 PlateInput::Path(p) => read_and_resize_plate_image(p, &self.config),
-                PlateInput::Image(img) => {
-                    crate::process::resize_image(
-                        img.clone(),
-                        self.config.img_height,
-                        self.config.img_width,
-                        &self.config.image_color_mode,
-                        self.config.keep_aspect_ratio,
-                        &self.config.interpolation,
-                        &self.config.padding_color,
-                    )
-                }
+                PlateInput::Image(img) => crate::process::resize_image(
+                    img.clone(),
+                    self.config.img_height,
+                    self.config.img_width,
+                    &self.config.image_color_mode,
+                    self.config.keep_aspect_ratio,
+                    &self.config.interpolation,
+                    &self.config.padding_color,
+                ),
             })
             .collect::<anyhow::Result<Vec<_>>>()?;
 
@@ -225,39 +367,10 @@ impl LicensePlateRecognizer {
 
         for img in &imgs {
             let raw = images_to_batch(std::slice::from_ref(img), &self.config);
-            let h = self.config.img_height as usize;
-            let w = self.config.img_width as usize;
-            let c = self.config.num_channels() as usize;
-
-            let input_tensor: Tensor =
-                tract_ndarray::Array4::<u8>::from_shape_vec((1, h, w, c), raw)
-                    .context("Cannot build input array")?
-                    .into();
-
-            let outputs = self
-                .model
-                .run(tvec![input_tensor.into()])
-                .context("Model run failed")?;
-
-            // Plate output (always present)
-            let plate_out = outputs
-                .get(self.plate_output_idx)
-                .context("Missing plate output")?;
-            let plate_view = plate_out
-                .to_array_view::<f32>()
-                .context("Cannot read plate output as f32")?;
-            plate_data_all.extend_from_slice(plate_view.as_slice().unwrap());
-
-            // Region output (optional)
-            if self.has_region_head {
-                if let Some(ridx) = self.region_output_idx {
-                    if let Some(region_out) = outputs.get(ridx) {
-                        let region_view = region_out
-                            .to_array_view::<f32>()
-                            .context("Cannot read region output as f32")?;
-                        region_data_all.extend_from_slice(region_view.as_slice().unwrap());
-                    }
-                }
+            let (plate_data, region_data) = self.run_model_raw(&raw, self.has_region_head)?;
+            plate_data_all.extend_from_slice(&plate_data);
+            if let Some(region_data) = region_data {
+                region_data_all.extend_from_slice(&region_data);
             }
         }
 
@@ -294,6 +407,67 @@ impl LicensePlateRecognizer {
             bail!("Expected exactly 1 result, got {}", results.len());
         }
         Ok(results.remove(0))
+    }
+
+    fn run_model_raw(
+        &self,
+        raw: &[u8],
+        with_region: bool,
+    ) -> anyhow::Result<(Vec<f32>, Option<Vec<f32>>)> {
+        match &self.backend {
+            InferenceBackend::Tract(backend) => {
+                let h = self.config.img_height as usize;
+                let w = self.config.img_width as usize;
+                let c = self.config.num_channels() as usize;
+
+                let input_tensor: Tensor =
+                    tract_ndarray::Array4::<u8>::from_shape_vec((1, h, w, c), raw.to_vec())
+                        .context("Cannot build input array")?
+                        .into();
+
+                let outputs = backend
+                    .model
+                    .run(tvec![input_tensor.into()])
+                    .context("Model run failed")?;
+
+                let plate_out = outputs
+                    .get(backend.plate_output_idx)
+                    .context("Missing plate output")?;
+                let plate_view = plate_out
+                    .to_array_view::<f32>()
+                    .context("Cannot read plate output as f32")?;
+                let plate_data = plate_view
+                    .as_slice()
+                    .context("Plate output is not contiguous")?
+                    .to_vec();
+
+                let region_data = if with_region {
+                    if let Some(ridx) = backend.region_output_idx {
+                        if let Some(region_out) = outputs.get(ridx) {
+                            let region_view = region_out
+                                .to_array_view::<f32>()
+                                .context("Cannot read region output as f32")?;
+                            Some(
+                                region_view
+                                    .as_slice()
+                                    .context("Region output is not contiguous")?
+                                    .to_vec(),
+                            )
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+
+                Ok((plate_data, region_data))
+            }
+            #[cfg(feature = "ncnn")]
+            InferenceBackend::Ncnn(backend) => backend.run_raw(raw, &self.config, with_region),
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -342,16 +516,7 @@ impl LicensePlateRecognizer {
                 self.run(&inputs, false, true)?;
             } else {
                 let raw = images_to_batch(std::slice::from_ref(&img), &self.config);
-                let input_tensor: Tensor =
-                    tract_ndarray::Array4::<u8>::from_shape_vec(
-                        (1, h as usize, w as usize, c as usize),
-                        raw,
-                    )
-                    .unwrap()
-                    .into();
-                self.model
-                    .run(tvec![input_tensor.into()])
-                    .context("benchmark run")?;
+                self.run_model_raw(&raw, false).context("benchmark run")?;
             }
             Ok(())
         };
@@ -392,4 +557,3 @@ impl LicensePlateRecognizer {
         Ok(())
     }
 }
-

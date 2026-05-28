@@ -8,7 +8,8 @@ Fast License Plate OCR inference in pure Rust. A high-performance port of [fast-
 
 ## Features
 
-- **Pure Rust implementation** using `tract-onnx` for ONNX model inference
+- **Pure Rust default backend** using `tract-onnx` for ONNX model inference
+- **Optional Tencent NCNN backend** for Raspberry Pi 5 / edge CPU inference from `.param`/`.bin` models
 - **Multiple pre-trained models** for global and regional license plates
 - **Character-level confidence scores** for result validation
 - **Region detection** for plates with regional information (e.g., country/state)
@@ -94,6 +95,20 @@ fpo-rust run --onnx ./models/custom.onnx --config ./models/custom_config.yaml pl
 fpo-rust run --model cct-s-v2-global-model --keep-pad plate.jpg
 ```
 
+#### Run with the optional NCNN backend:
+
+```bash
+# After building with --features ncnn-cpu and converting the model:
+fpo-rust run --backend ncnn --model cct-s-v2-global-model --threads 4 plate.jpg
+
+# Or with explicit converted files:
+fpo-rust run --backend ncnn \
+  --param ./models/custom.ncnn.param \
+  --bin ./models/custom.ncnn.bin \
+  --config ./models/custom_config.yaml \
+  plate.jpg
+```
+
 #### Run benchmark:
 
 ```bash
@@ -105,6 +120,9 @@ fpo-rust benchmark --model cct-s-v2-global-model --iters 1000 --batch 32 --warmu
 
 # Include pre/post-processing time in benchmark
 fpo-rust benchmark --model cct-s-v2-global-model --include-processing
+
+# Benchmark converted NCNN model on Raspberry Pi 5
+fpo-rust benchmark --backend ncnn --model cct-s-v2-global-model --threads 4
 ```
 
 ## Available Models
@@ -197,6 +215,105 @@ mkdir models
 fpo-rust run --onnx ./models/my_model.onnx --config ./models/my_config.yaml plate.jpg
 ```
 
+## Raspberry Pi 5 / NCNN Backend
+
+The NCNN backend is optional. The default binary stays pure Rust and uses ONNX through `tract-onnx`; NCNN builds require a local Tencent NCNN install because the backend links to NCNN's C API.
+
+Tencent's NCNN docs recommend `pnnx` for ONNX conversion and produce `.ncnn.param` plus `.ncnn.bin` files. See the official NCNN ONNX guide and PNNX options:
+
+- <https://github.com/tencent/ncnn/wiki/use-ncnn-with-pytorch-or-onnx>
+- <https://github.com/Tencent/ncnn/tree/master/tools/pnnx>
+
+### 1. Build NCNN on Raspberry Pi 5
+
+CPU-only is the most predictable path on Raspberry Pi 5. Vulkan can be experimented with separately, but NCNN's own Raspberry Pi notes call out driver maturity concerns.
+
+```bash
+sudo apt update
+sudo apt install -y build-essential git cmake clang libclang-dev \
+  libprotobuf-dev protobuf-compiler
+
+git clone --recursive https://github.com/Tencent/ncnn.git
+cd ncnn
+mkdir build-rpi5-cpu
+cd build-rpi5-cpu
+cmake -DCMAKE_BUILD_TYPE=Release \
+  -DNCNN_VULKAN=OFF \
+  -DNCNN_C_API=ON \
+  -DNCNN_STRING=ON \
+  -DNCNN_STDIO=ON \
+  -DNCNN_BUILD_TOOLS=ON \
+  -DNCNN_BUILD_EXAMPLES=OFF \
+  ..
+cmake --build . -j"$(nproc)"
+sudo cmake --install . --prefix /opt/ncnn
+```
+
+### 2. Build `fpo-rust` with NCNN enabled
+
+```bash
+cd /path/to/fpo-rust
+export NCNN_LIB_DIR=/opt/ncnn/lib
+cargo build --release --features ncnn-cpu
+```
+
+If your NCNN install uses a non-standard link setup, these environment variables are supported:
+
+- `NCNN_LIB_DIR`: directory containing `libncnn.a` or `libncnn.so`
+- `NCNN_LINK_KIND`: `static` or `dylib` (default: `static`)
+- `NCNN_LIB_NAME`: library name without prefix/suffix (default: `ncnn`)
+- `NCNN_EXTRA_LIBS`: extra libraries separated by commas, semicolons, or spaces
+
+### 3. Convert models
+
+Hub models are downloaded as ONNX, so convert them once:
+
+```bash
+./target/release/fpo-rust convert-ncnn --model cct-s-v2-global-model --pnnx pnnx
+```
+
+For custom models:
+
+```bash
+./target/release/fpo-rust convert-ncnn \
+  --onnx ./models/custom.onnx \
+  --config ./models/custom_config.yaml
+```
+
+The converter command passes `inputshape=[1,img_height,img_width,channels]` from the YAML config and writes:
+
+```text
+<model>.ncnn.param
+<model>.ncnn.bin
+```
+
+The default is `fp16=0` for portability. Add `--fp16` if you want PNNX to store fp16 weights and have verified accuracy/performance on your NCNN build.
+
+### 4. Run inference
+
+```bash
+./target/release/fpo-rust run \
+  --backend ncnn \
+  --model cct-s-v2-global-model \
+  --threads 4 \
+  plate.jpg
+```
+
+If NCNN reports a missing blob name, inspect the `.ncnn.param` file or Netron graph and pass explicit names:
+
+```bash
+./target/release/fpo-rust run --backend ncnn \
+  --param ./models/custom.ncnn.param \
+  --bin ./models/custom.ncnn.bin \
+  --config ./models/custom_config.yaml \
+  --input-name in0 \
+  --plate-output out0 \
+  --region-output out1 \
+  plate.jpg
+```
+
+The built-in fast-plate-ocr ONNX models use NHWC input shape `[1, H, W, C]`; the NCNN backend preserves that layout for converted models.
+
 ## API Reference
 
 ### Main Types
@@ -215,6 +332,12 @@ The main inference engine.
 
 - `from_files(onnx_path: impl AsRef<Path>, config_path: impl AsRef<Path>) -> Result<Self>`
   - Load a custom ONNX model with its config
+
+- `from_ncnn_files(param_path, bin_path, config_path) -> Result<Self>` (feature `ncnn`)
+  - Load a converted NCNN model with default blob-name inference
+
+- `from_ncnn_files_with_options(param_path, bin_path, config_path, NcnnOptions) -> Result<Self>` (feature `ncnn`)
+  - Load a converted NCNN model with explicit blob names / runtime options
 
 - `run(inputs: &[PlateInput], return_confidence: bool, remove_pad_char: bool) -> Result<Vec<PlatePrediction>>`
   - Run inference on multiple images
@@ -365,6 +488,7 @@ cargo run --release -- benchmark --model cct-s-v2-global-model --iters 1000
 ## Dependencies
 
 - **tract-onnx** - Pure-Rust ONNX runtime
+- **Tencent NCNN C API** - Optional linked backend (feature `ncnn` / `ncnn-cpu`)
 - **image** - Image loading and processing
 - **serde** - Serialization framework
 - **serde_yml** - YAML parsing for config files

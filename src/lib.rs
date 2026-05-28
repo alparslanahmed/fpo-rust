@@ -14,10 +14,14 @@
 
 pub mod config;
 pub mod hub;
+#[cfg(feature = "ncnn")]
+pub mod ncnn_backend;
 pub mod process;
 pub mod recognizer;
 
 pub use config::PlateConfig;
 pub use hub::OcrModel;
+#[cfg(feature = "ncnn")]
+pub use ncnn_backend::NcnnOptions;
 pub use process::PlatePrediction;
 pub use recognizer::{LicensePlateRecognizer, PlateInput};

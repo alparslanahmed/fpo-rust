@@ -87,14 +87,24 @@ pub fn resize_image(
         ImageColorMode::Grayscale => {
             let fill = Luma([padding_color.as_gray()]);
             let mut canvas: GrayImage = ImageBuffer::from_pixel(target_w, target_h, fill);
-            imageops::overlay(&mut canvas, &resized.to_luma8(), pad_left as i64, pad_top as i64);
+            imageops::overlay(
+                &mut canvas,
+                &resized.to_luma8(),
+                pad_left as i64,
+                pad_top as i64,
+            );
             Ok(DynamicImage::ImageLuma8(canvas))
         }
         ImageColorMode::Rgb => {
             let [r, g, b] = padding_color.as_rgb();
             let fill = Rgb([r, g, b]);
             let mut canvas: RgbImage = ImageBuffer::from_pixel(target_w, target_h, fill);
-            imageops::overlay(&mut canvas, &resized.to_rgb8(), pad_left as i64, pad_top as i64);
+            imageops::overlay(
+                &mut canvas,
+                &resized.to_rgb8(),
+                pad_left as i64,
+                pad_top as i64,
+            );
             Ok(DynamicImage::ImageRgb8(canvas))
         }
     }
@@ -156,6 +166,17 @@ pub struct PlatePrediction {
     pub region_prob: Option<f32>,
 }
 
+impl PlatePrediction {
+    /// Average character confidence, or `0.0` when confidence scores were not requested.
+    pub fn avg_char_confidence(&self) -> f32 {
+        self.char_probs
+            .as_ref()
+            .filter(|probs| !probs.is_empty())
+            .map(|probs| probs.iter().sum::<f32>() / probs.len() as f32)
+            .unwrap_or(0.0)
+    }
+}
+
 /// Decode the raw plate-head output tensor into `PlatePrediction` values.
 ///
 /// # Parameters
@@ -192,7 +213,8 @@ pub fn postprocess_output(
     let mut results = Vec::with_capacity(n);
 
     for i in 0..n {
-        let sample = &model_output[i * max_plate_slots * vocab_size..(i + 1) * max_plate_slots * vocab_size];
+        let sample =
+            &model_output[i * max_plate_slots * vocab_size..(i + 1) * max_plate_slots * vocab_size];
 
         let mut plate = String::with_capacity(max_plate_slots);
         let mut probs = if return_confidence {
