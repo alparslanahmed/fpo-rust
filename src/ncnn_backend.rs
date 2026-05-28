@@ -67,12 +67,10 @@ mod ffi {
             mat: *mut NcnnMatT,
         ) -> c_int;
 
-        pub fn ncnn_mat_create_external_4d(
+        pub fn ncnn_mat_create_3d(
             w: c_int,
             h: c_int,
-            d: c_int,
             c: c_int,
-            data: *mut c_void,
             allocator: *mut c_void,
         ) -> NcnnMatT;
         pub fn ncnn_mat_destroy(mat: NcnnMatT);
@@ -228,15 +226,8 @@ struct NcnnMat {
 }
 
 impl NcnnMat {
-    unsafe fn new_external_4d(
-        w: i32,
-        h: i32,
-        d: i32,
-        c: i32,
-        data: *mut c_void,
-    ) -> anyhow::Result<Self> {
-        let ptr =
-            unsafe { ffi::ncnn_mat_create_external_4d(w, h, d, c, data, std::ptr::null_mut()) };
+    fn new_3d(w: i32, h: i32, c: i32) -> anyhow::Result<Self> {
+        let ptr = unsafe { ffi::ncnn_mat_create_3d(w, h, c, std::ptr::null_mut()) };
         if ptr.is_null() {
             bail!("Cannot create NCNN input mat");
         }
@@ -459,18 +450,10 @@ impl NcnnBackend {
             );
         }
 
-        let mut input_data: Vec<f32> = raw_nhwc.iter().map(|&v| v as f32).collect();
-        let input = unsafe {
-            // pnnx preserves the ONNX input tensor order. The existing fast-plate-ocr models use
-            // NHWC shape [1, H, W, C], which maps to NCNN Mat dimensions w=C, h=W, d=H, c=1.
-            NcnnMat::new_external_4d(
-                c as i32,
-                w as i32,
-                h as i32,
-                1,
-                input_data.as_mut_ptr().cast::<c_void>(),
-            )?
-        };
+        // pnnx-generated NCNN smoke tests pass `input.squeeze(0)`, so the batch dimension is
+        // removed and NHWC [H, W, C] maps to NCNN Mat dimensions w=C, h=W, c=H.
+        let input = NcnnMat::new_3d(c as i32, w as i32, h as i32)?;
+        copy_nhwc_to_ncnn_mat(raw_nhwc, &input, h, w, c)?;
         ncnn_debug(|| format!("prepared input {:?}", input));
 
         let mut extractor = self.net.create_extractor()?;
@@ -525,6 +508,37 @@ fn ncnn_debug(message: impl FnOnce() -> String) {
     if std::env::var_os("FPO_NCNN_DEBUG").is_some() {
         eprintln!("[fpo-rust ncnn] {}", message());
     }
+}
+
+fn copy_nhwc_to_ncnn_mat(
+    raw_nhwc: &[u8],
+    mat: &NcnnMat,
+    h: usize,
+    w: usize,
+    c: usize,
+) -> anyhow::Result<()> {
+    let dst = mat.data().cast::<f32>();
+    if dst.is_null() {
+        bail!("NCNN input data pointer is null");
+    }
+
+    let row_len = w * c;
+    let cstep = mat.cstep();
+    if cstep < row_len {
+        bail!("NCNN input cstep is too small: got {cstep}, expected at least {row_len}");
+    }
+
+    unsafe {
+        for y in 0..h {
+            let src_row = &raw_nhwc[y * row_len..(y + 1) * row_len];
+            let dst_row = std::slice::from_raw_parts_mut(dst.add(y * cstep), row_len);
+            for (dst, src) in dst_row.iter_mut().zip(src_row.iter().copied()) {
+                *dst = src as f32;
+            }
+        }
+    }
+
+    Ok(())
 }
 
 fn mat_to_vec_f32(mat: &NcnnMat) -> anyhow::Result<Vec<f32>> {
