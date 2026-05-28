@@ -40,6 +40,11 @@ mod ffi {
         pub fn ncnn_option_create() -> NcnnOptionT;
         pub fn ncnn_option_destroy(opt: NcnnOptionT);
         pub fn ncnn_option_set_num_threads(opt: NcnnOptionT, num_threads: c_int);
+        pub fn ncnn_option_set_use_packing_layout(opt: NcnnOptionT, enable: c_int);
+        pub fn ncnn_option_set_use_fp16_packed(opt: NcnnOptionT, enable: c_int);
+        pub fn ncnn_option_set_use_fp16_storage(opt: NcnnOptionT, enable: c_int);
+        pub fn ncnn_option_set_use_fp16_arithmetic(opt: NcnnOptionT, enable: c_int);
+        pub fn ncnn_option_set_use_bf16_storage(opt: NcnnOptionT, enable: c_int);
         #[cfg(not(feature = "ncnn-cpu"))]
         pub fn ncnn_option_set_use_vulkan_compute(opt: NcnnOptionT, enable: c_int);
 
@@ -62,7 +67,6 @@ mod ffi {
             mat: *mut NcnnMatT,
         ) -> c_int;
 
-        pub fn ncnn_mat_create() -> NcnnMatT;
         pub fn ncnn_mat_create_external_3d(
             w: c_int,
             h: c_int,
@@ -101,6 +105,16 @@ impl NcnnRuntimeOption {
 
     fn set_num_threads(&mut self, num_threads: u32) {
         unsafe { ffi::ncnn_option_set_num_threads(self.ptr, num_threads as i32) };
+    }
+
+    fn set_conservative_cpu_math(&mut self) {
+        unsafe {
+            ffi::ncnn_option_set_use_packing_layout(self.ptr, 0);
+            ffi::ncnn_option_set_use_fp16_packed(self.ptr, 0);
+            ffi::ncnn_option_set_use_fp16_storage(self.ptr, 0);
+            ffi::ncnn_option_set_use_fp16_arithmetic(self.ptr, 0);
+            ffi::ncnn_option_set_use_bf16_storage(self.ptr, 0);
+        }
     }
 
     #[cfg(not(feature = "ncnn-cpu"))]
@@ -183,13 +197,20 @@ impl NcnnExtractor {
         Ok(())
     }
 
-    fn extract(&mut self, name: &str, mat: &mut NcnnMat) -> anyhow::Result<()> {
+    fn extract(&mut self, name: &str) -> anyhow::Result<NcnnMat> {
         let name = CString::new(name)?;
-        let status = unsafe { ffi::ncnn_extractor_extract(self.ptr, name.as_ptr(), &mut mat.ptr) };
+        let mut ptr = std::ptr::null_mut();
+        let status = unsafe { ffi::ncnn_extractor_extract(self.ptr, name.as_ptr(), &mut ptr) };
         if status != 0 {
+            if !ptr.is_null() {
+                unsafe { ffi::ncnn_mat_destroy(ptr) };
+            }
             bail!("Error extracting NCNN output");
         }
-        Ok(())
+        if ptr.is_null() {
+            bail!("NCNN extraction returned a null output mat");
+        }
+        Ok(NcnnMat { ptr })
     }
 }
 
@@ -206,14 +227,6 @@ struct NcnnMat {
 }
 
 impl NcnnMat {
-    fn new() -> anyhow::Result<Self> {
-        let ptr = unsafe { ffi::ncnn_mat_create() };
-        if ptr.is_null() {
-            bail!("Cannot create NCNN mat");
-        }
-        Ok(Self { ptr })
-    }
-
     unsafe fn new_external_3d(w: i32, h: i32, c: i32, data: *mut c_void) -> anyhow::Result<Self> {
         let ptr = unsafe { ffi::ncnn_mat_create_external_3d(w, h, c, data, std::ptr::null_mut()) };
         if ptr.is_null() {
@@ -373,7 +386,8 @@ impl NcnnBackend {
         if let Some(num_threads) = options.num_threads {
             runtime_options.set_num_threads(num_threads);
         }
-        if options.use_vulkan {
+        let use_vulkan = options.use_vulkan;
+        if use_vulkan {
             #[cfg(feature = "ncnn-cpu")]
             eprintln!(
                 "Warning: --vulkan was requested, but this binary was built with the ncnn-cpu feature. Vulkan is disabled."
@@ -381,9 +395,27 @@ impl NcnnBackend {
             #[cfg(not(feature = "ncnn-cpu"))]
             runtime_options.set_use_vulkan_compute(true);
         }
+        #[cfg(feature = "ncnn-cpu")]
+        let effective_vulkan = false;
+        #[cfg(not(feature = "ncnn-cpu"))]
+        let effective_vulkan = use_vulkan;
+        if !effective_vulkan {
+            runtime_options.set_conservative_cpu_math();
+        }
 
         let mut net = NcnnNet::new()?;
         net.set_option(&runtime_options);
+        ncnn_debug(|| {
+            format!(
+                "loading param={} bin={} input={} plate_output={} region_output={:?} vulkan={}",
+                param_path.display(),
+                bin_path.display(),
+                input_name,
+                plate_output_name,
+                region_output_name,
+                effective_vulkan
+            )
+        });
         net.load_param(param_path)
             .with_context(|| format!("Cannot load NCNN params: {}", param_path.display()))?;
         net.load_model(bin_path)
@@ -430,30 +462,34 @@ impl NcnnBackend {
                 input_data.as_mut_ptr().cast::<c_void>(),
             )?
         };
+        ncnn_debug(|| format!("prepared input {:?}", input));
 
         let mut extractor = self.net.create_extractor()?;
+        ncnn_debug(|| format!("setting input blob '{}'", self.input_name));
         extractor
             .input(&self.input_name, &input)
             .with_context(|| format!("Cannot set NCNN input blob '{}'", self.input_name))?;
 
-        let mut plate_output = NcnnMat::new()?;
-        extractor
-            .extract(&self.plate_output_name, &mut plate_output)
+        ncnn_debug(|| format!("extracting plate output '{}'", self.plate_output_name));
+        let plate_output = extractor
+            .extract(&self.plate_output_name)
             .with_context(|| {
                 format!(
                     "Cannot extract NCNN plate output blob '{}'",
                     self.plate_output_name
                 )
             })?;
+        ncnn_debug(|| format!("plate output {:?}", plate_output));
         let plate_data = mat_to_vec_f32(&plate_output)
             .with_context(|| format!("Cannot read NCNN output {:?}", plate_output))?;
 
         let region_data = if with_region {
             if let Some(name) = &self.region_output_name {
-                let mut region_output = NcnnMat::new()?;
-                extractor
-                    .extract(name, &mut region_output)
+                ncnn_debug(|| format!("extracting region output '{name}'"));
+                let region_output = extractor
+                    .extract(name)
                     .with_context(|| format!("Cannot extract NCNN region output blob '{name}'"))?;
+                ncnn_debug(|| format!("region output {:?}", region_output));
                 Some(
                     mat_to_vec_f32(&region_output)
                         .with_context(|| format!("Cannot read NCNN output {:?}", region_output))?,
@@ -474,6 +510,12 @@ fn path_to_cstring(path: &Path) -> anyhow::Result<CString> {
         .to_str()
         .with_context(|| format!("Path is not valid UTF-8: {}", path.display()))?;
     Ok(CString::new(path)?)
+}
+
+fn ncnn_debug(message: impl FnOnce() -> String) {
+    if std::env::var_os("FPO_NCNN_DEBUG").is_some() {
+        eprintln!("[fpo-rust ncnn] {}", message());
+    }
 }
 
 fn mat_to_vec_f32(mat: &NcnnMat) -> anyhow::Result<Vec<f32>> {

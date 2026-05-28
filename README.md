@@ -336,6 +336,8 @@ If NCNN reports a missing blob name, inspect the `.ncnn.param` file or Netron gr
 
 The built-in fast-plate-ocr ONNX models use NHWC input shape `[1, H, W, C]`; the NCNN backend preserves that layout for converted models.
 
+Set `FPO_NCNN_DEBUG=1` before `run` to print the NCNN load, input, and output-extraction steps. This is useful when diagnosing native NCNN crashes on a target device.
+
 ## API Reference
 
 ### Main Types
